@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import org.opencv.core.Core;
+import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
 
 public class HelloOpenCV extends JFrame {
@@ -15,12 +16,17 @@ public class HelloOpenCV extends JFrame {
 
 	public static void main(String[] args) {
 		new HelloOpenCV();
+//		new HelloOpenCV(1);
 	}
 	
 	public HelloOpenCV(){
+		this(0);
+	}
+	
+	public HelloOpenCV(int deviceId){
 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		VideoCapture capture = new VideoCapture(0);
+		VideoCapture capture = new VideoCapture(deviceId);
 		this.setSize(800, 600);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		Container pane = this.getContentPane();

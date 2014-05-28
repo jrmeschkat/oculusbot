@@ -20,7 +20,7 @@ public class VideoPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private VideoCapture capture;
 	private BufferedImage current;
-	private int FPS = 30;
+	private int FPS = 5;
 	
 	public BufferedImage getCurrent() {	return current;	}
 	public void setCurrent(BufferedImage current) {	this.current = current;	}
@@ -54,6 +54,7 @@ public class VideoPanel extends JPanel{
 		public void run() {
 			Mat frame = new Mat();
 			capture.retrieve(frame);
+			Highgui.imwrite("frame"+(int)(Math.random()*1000)+".jpg", frame);
 			BufferedImage img = null;
 			try {
 				img = convertToBufferedImage(frame);
