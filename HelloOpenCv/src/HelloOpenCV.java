@@ -13,6 +13,8 @@ public class HelloOpenCV extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private VideoPanel panel;
+	
+	static{System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
 
 	public static void main(String[] args) {
 		new HelloOpenCV();
@@ -25,7 +27,7 @@ public class HelloOpenCV extends JFrame {
 	
 	public HelloOpenCV(int deviceId){
 
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+//		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		VideoCapture capture = new VideoCapture(deviceId);
 		this.setSize(800, 600);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

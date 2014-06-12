@@ -1,6 +1,7 @@
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -55,12 +56,13 @@ public class VideoPanel extends JPanel{
 			Mat frame = new Mat();
 			capture.read(frame);
 			BufferedImage img = null;
-			try {
-				img = convertToBufferedImage(frame);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				img = convertToBufferedImage(frame);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			img = MatToBufferedImage(frame);
 			canvas.setCurrent(img);
 			canvas.repaint();
 		}
@@ -75,4 +77,15 @@ public class VideoPanel extends JPanel{
 				.toArray()));
 		return result;
 	}
+	
+	public BufferedImage MatToBufferedImage(Mat matBGR){  
+	      int width = matBGR.width(), height = matBGR.height(), channels = matBGR.channels() ;  
+	      byte[] sourcePixels = new byte[width * height * channels];  
+	      matBGR.get(0, 0, sourcePixels);  
+	      // create new image and get reference to backing data  
+	      BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);  
+	      final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();  
+	      System.arraycopy(sourcePixels, 0, targetPixels, 0, sourcePixels.length);  
+	      return image;  
+	}  
 }
