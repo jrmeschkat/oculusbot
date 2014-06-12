@@ -1,4 +1,5 @@
 import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -17,7 +18,7 @@ public class HandleClientTask {
 	}
 	public HandleClientTask(Socket socket){
 		try {
-			BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			//TODO replace with threads
 			CaptureFrameTask captureFrameTask = new CaptureFrameTask(new VideoCapture(0));
 			captureFrameTask.run();
@@ -25,24 +26,20 @@ public class HandleClientTask {
 			int size = frame.width()*frame.height()*frame.channels();
 			byte[] data = new byte[size];
 			frame.get(0, 0, data);
-//			Mat test = new Mat(frame.rows(), frame.cols(), frame.type());
-//			test.put(0, 0, data);
-//			Highgui.imwrite("test.jpg", test);
-			out.write(frame.rows());
-			out.write(frame.cols());
-			out.write(frame.type());
-			out.write(size);
-			out.write(data);
-			out.flush();
-//			out.close();
+			out.writeInt(frame.rows());
+			out.writeInt(frame.cols());
+			out.writeInt(frame.type());
+			out.writeInt(data.length);
+			out.write(data, 0, data.length);
+			out.close();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-//		finally {
-//			if(socket != null){
-//				try { socket.close(); } catch (IOException e) {}
-//			}
-//		}
+		finally {
+			if(socket != null){
+				try { socket.close(); } catch (IOException e) {}
+			}
+		}
 	}
 }
