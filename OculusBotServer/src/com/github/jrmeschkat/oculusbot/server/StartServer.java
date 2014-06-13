@@ -1,41 +1,49 @@
+package com.github.jrmeschkat.oculusbot.server;
+
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.ArrayList;
+
+import com.github.jrmeschkat.oculusbot.server.clienthandling.HandleClientTask;
 
 
-public class ServerTask implements Runnable{
-
+public class StartServer {
 	public static final int PORT = 1337;
+
+	public static void main(String[] args) {
+		StartServer server = new StartServer();
+		server.start();
+
+	}
 	
 	private ServerSocket serverSocket = null;
 	private Socket socket = null;
 	
-	public ServerTask(){
+	public StartServer(){
 		try {
 			serverSocket = new ServerSocket(PORT);
 		} catch (IOException e) {
 			System.err.println("Could not open server socket on port "+PORT+".");
 			e.printStackTrace();
 		}
+		
 	}
 	
 	
-	@Override
-	public void run() {
+	public void start() {
 		while(true){
 			try {
 				if(serverSocket != null){
 					socket = serverSocket.accept();
 				}
-				
-				new HandleClientTask(socket);
-				
+				Thread client = new Thread(new HandleClientTask(socket));
+				client.start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
+
 
 }

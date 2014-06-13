@@ -1,21 +1,25 @@
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
+import java.awt.Container;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
 
 
-public class StartClient {
+public class StartClient extends JFrame {
+	private static final long serialVersionUID = 1L;
 	public static final String HOST = "localhost";
 	public static final int PORT = 1337;
 	
 	private Socket socket = null;
+	private LinkedList<Mat> frames = new LinkedList<>();
 	
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -28,27 +32,25 @@ public class StartClient {
 	public StartClient(){
 		try {
 			socket = new Socket(HOST, PORT);
-			DataInputStream in = new DataInputStream(socket.getInputStream());
-			int rows = in.readInt();
-			int cols = in.readInt();
-			int type = in.readInt();
-			int length = in.readInt();
-			byte[] data = new byte[length];
-			in.readFully(data);
-			Mat frame = new Mat(rows, cols, type);
-			frame.put(0, 0, data);
-			Highgui.imwrite("frame.jpg", frame);
-			in.close();
+			Thread recieveFramesThread = new Thread(new ReceiveFramesTask(socket, frames));
+			recieveFramesThread.start();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
 		finally{
-			if(socket != null){
-				try {socket.close();} catch (IOException e) {}
-			}
+//			if(socket != null){
+//				try {socket.close();} catch (IOException e) {}
+//			}
 		}
+		this.setSize(800, 600);
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		Container pane = this.getContentPane();
+		VideoPanel panel = new VideoPanel(frames);
+		pane.add(panel);
+		this.setVisible(true);
+
 	}
 
 }
