@@ -1,5 +1,8 @@
 import java.awt.Container;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -38,12 +41,18 @@ public class StartClient extends JFrame {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
-		finally{
-//			if(socket != null){
-//				try {socket.close();} catch (IOException e) {}
-//			}
 		}
+		
+		this.addWindowListener(new WindowClosingListner() {
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+				if(socket != null){
+					try { socket.close(); } catch (IOException e1) {}
+				}
+			}
+		});
+		
 		this.setSize(800, 600);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		Container pane = this.getContentPane();

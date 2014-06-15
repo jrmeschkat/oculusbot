@@ -10,6 +10,11 @@ public class ReceiveFramesTask implements Runnable {
 	
 	private LinkedList<Mat> frames;
 	private DataInputStream in;
+	private static int rows = -1;
+	private static int cols = -1;
+	private static int type = -1;
+	private static int length = -1;
+	private static boolean readMetaInfo = false;
 	
 	public ReceiveFramesTask(Socket socket, LinkedList<Mat> frames){
 		this.frames = frames;
@@ -26,17 +31,20 @@ public class ReceiveFramesTask implements Runnable {
 		Mat frame;
 		while(true){
 			try {
-				int rows = in.readInt();
-				int cols = in.readInt();
-				int type = in.readInt();
-				int length = in.readInt();
+				if(!readMetaInfo){
+					rows = in.readInt();
+					cols = in.readInt();
+					type = in.readInt();
+					length = in.readInt();
+					System.out.println("Rows: "+rows+"\tCols: "+cols+"\tType: "+type+"\tLength: "+length);
+					readMetaInfo = true;
+				}
 				byte[] data = new byte[length];
 				in.readFully(data);
 				frame = new Mat(rows, cols, type);
 				frame.put(0, 0, data);
 				frames.addFirst(frame);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
