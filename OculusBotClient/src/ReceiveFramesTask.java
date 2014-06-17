@@ -10,11 +10,11 @@ import org.opencv.highgui.Highgui;
 
 public class ReceiveFramesTask implements Runnable {
 	
-	private LinkedList<MatOfByte> frames;
+	private LinkedList<Frame> frames;
 	private DataInputStream in;
 	private boolean running = true;
 	
-	public ReceiveFramesTask(Socket socket, LinkedList<MatOfByte> frames){
+	public ReceiveFramesTask(Socket socket, LinkedList<Frame> frames){
 		this.frames = frames;
 		try {
 			in = new DataInputStream(socket.getInputStream());
@@ -27,11 +27,12 @@ public class ReceiveFramesTask implements Runnable {
 	public void run() {
 		while(running){
 			try {
+				long timestamp = in.readLong();
 				int size = in.readInt();
 				byte[] data = new byte[size];
 				in.readFully(data);
 				MatOfByte buffer = new MatOfByte(data);
-				frames.addFirst(buffer);
+				frames.addFirst(new Frame(buffer, timestamp));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

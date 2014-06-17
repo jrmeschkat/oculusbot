@@ -27,7 +27,7 @@ public class StartClient extends JFrame {
 	private ReceiveFramesTask receiveFramesTask = null;
 	
 	private Socket socket = null;
-	private LinkedList<MatOfByte> frames = new LinkedList<>();
+	private LinkedList<Frame> frames = new LinkedList<>();
 	
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);

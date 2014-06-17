@@ -30,7 +30,7 @@ public class VideoPanel extends JPanel {
 		this.current = current;
 	}
 
-	public VideoPanel(LinkedList<MatOfByte> frames) {
+	public VideoPanel(LinkedList<Frame> frames) {
 
 		new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(
 				new DrawFrameTask(this, frames), 0, 1000 / FPS,
@@ -46,9 +46,9 @@ public class VideoPanel extends JPanel {
 
 	private class DrawFrameTask implements Runnable {
 		private VideoPanel canvas;
-		private LinkedList<MatOfByte> frames;
+		private LinkedList<Frame> frames;
 
-		public DrawFrameTask(VideoPanel canvas, LinkedList<MatOfByte> frames) {
+		public DrawFrameTask(VideoPanel canvas, LinkedList<Frame> frames) {
 			this.canvas = canvas;
 			this.frames = frames;
 		}
@@ -56,8 +56,9 @@ public class VideoPanel extends JPanel {
 		@Override
 		public void run() {
 			try {
-				MatOfByte frame = frames.removeLast();
-				BufferedImage img = matToBufferedImage(frame);
+				Frame frame = frames.removeLast();
+				System.out.println("Time: "+(System.currentTimeMillis()-frame.getTimestamp()));
+				BufferedImage img = matToBufferedImage(frame.getFrame());
 				canvas.setCurrent(img);
 				canvas.repaint();
 			} catch (NoSuchElementException e) {
@@ -82,7 +83,6 @@ public class VideoPanel extends JPanel {
 		try {
 			result = ImageIO.read(new ByteArrayInputStream(matBGR.toArray()));
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return result;
 	}

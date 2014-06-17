@@ -36,6 +36,7 @@ public class CaptureFrameTask implements Runnable {
 			Mat frame = new Mat();
 			MatOfByte buffer = new MatOfByte();
 			capture.read(frame);
+			long timestamp = System.currentTimeMillis();
 			Highgui.imencode(".jpg", frame, buffer, params);
 			
 			//get data from stored frame
@@ -44,6 +45,7 @@ public class CaptureFrameTask implements Runnable {
 			//send data
 			//TODO think about data compression
 			//TODO find out if synchronism is a problem
+			out.writeLong(timestamp);
 			out.writeInt(data.length);
 			out.write(data, 0, data.length);
 		} catch (SocketException e1){
