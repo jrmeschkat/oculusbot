@@ -13,16 +13,21 @@ import javax.swing.WindowConstants;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.highgui.Highgui;
 
 
 public class StartClient extends JFrame {
 	private static final long serialVersionUID = 1L;
+	//TODO find server on network
 	public static final String HOST = "localhost";
+//	public static final String HOST = "192.168.178.46";
 	public static final int PORT = 1337;
 	
+	private ReceiveFramesTask receiveFramesTask = null;
+	
 	private Socket socket = null;
-	private LinkedList<Mat> frames = new LinkedList<>();
+	private LinkedList<MatOfByte> frames = new LinkedList<>();
 	
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -35,7 +40,8 @@ public class StartClient extends JFrame {
 	public StartClient(){
 		try {
 			socket = new Socket(HOST, PORT);
-			Thread recieveFramesThread = new Thread(new ReceiveFramesTask(socket, frames));
+			receiveFramesTask = new ReceiveFramesTask(socket, frames);
+			Thread recieveFramesThread = new Thread(receiveFramesTask);
 			recieveFramesThread.start();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -47,6 +53,10 @@ public class StartClient extends JFrame {
 			
 			@Override
 			public void windowClosed(WindowEvent e) {
+				if(receiveFramesTask != null){
+					receiveFramesTask.stop();
+				}
+				
 				if(socket != null){
 					try { socket.close(); } catch (IOException e1) {}
 				}

@@ -33,10 +33,6 @@ public class HandleClientTask implements Runnable {
 			out = new DataOutputStream(socket.getOutputStream());
 			capture = new VideoCapture(0);
 			
-			for(int i : CaptureFrameTask.getMetaInfo(capture)){
-				out.writeInt(i);
-			}
-			
 			ScheduledThreadPoolExecutor exe = new ScheduledThreadPoolExecutor(1);
 			CaptureFrameTask captureFrameTask = new CaptureFrameTask(capture, out, socket, exe);
 			exe.scheduleWithFixedDelay(captureFrameTask, 0, 1000/FPS, TimeUnit.MILLISECONDS);

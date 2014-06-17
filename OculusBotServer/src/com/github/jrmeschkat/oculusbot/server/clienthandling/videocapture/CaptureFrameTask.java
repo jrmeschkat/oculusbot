@@ -7,20 +7,26 @@ import java.net.SocketException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfInt;
+import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
 
 public class CaptureFrameTask implements Runnable {
 
+	public static final int QUALITY = 50;
 	private VideoCapture capture;
 	private DataOutputStream out;
 	private Socket socket;
 	private ScheduledThreadPoolExecutor exe;
+	private MatOfInt params;
 
 	public CaptureFrameTask(VideoCapture capture, DataOutputStream out, Socket socket, ScheduledThreadPoolExecutor exe) {
 		this.capture = capture;
 		this.out = out;
 		this.socket = socket;
 		this.exe = exe;
+		params = new MatOfInt(Highgui.CV_IMWRITE_JPEG_QUALITY, QUALITY); 
 	}
 
 	@Override
@@ -28,16 +34,17 @@ public class CaptureFrameTask implements Runnable {
 		try {
 			//capture frame from webcam
 			Mat frame = new Mat();
+			MatOfByte buffer = new MatOfByte();
 			capture.read(frame);
+			Highgui.imencode(".jpg", frame, buffer, params);
 			
 			//get data from stored frame
-			int size = frame.width() * frame.height() * frame.channels();
-			byte[] data = new byte[size];
-			frame.get(0, 0, data);
+			byte[] data = buffer.toArray();
 			
 			//send data
 			//TODO think about data compression
 			//TODO find out if synchronism is a problem
+			out.writeInt(data.length);
 			out.write(data, 0, data.length);
 		} catch (SocketException e1){
 			exe.shutdown();
@@ -59,16 +66,4 @@ public class CaptureFrameTask implements Runnable {
 		}
 	}
 	
-	public static int[] getMetaInfo(VideoCapture capture){
-		int[] info = new int[4];
-		Mat frame = new Mat();
-		capture.read(frame);
-		int size = frame.width() * frame.height() * frame.channels();
-		info[0] = frame.rows();
-		info[1] = frame.cols();
-		info[2] = frame.type();
-		info[3] = size;
-		return info;
-	}
-
 }
