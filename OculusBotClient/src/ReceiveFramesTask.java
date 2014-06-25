@@ -33,7 +33,10 @@ public class ReceiveFramesTask implements Runnable {
 				in.readFully(data);
 				MatOfByte buffer = new MatOfByte(data);
 				frames.addFirst(new Frame(buffer, timestamp));
+				Thread.sleep(30);
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
