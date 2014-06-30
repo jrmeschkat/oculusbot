@@ -4,7 +4,11 @@ import java.awt.event.WindowListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 
@@ -16,6 +20,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.highgui.Highgui;
 
+import com.github.jrmeschkat.oculusbot.constants.NetworkCommunicationsConstants;
+
 
 public class StartClient extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -26,7 +32,7 @@ public class StartClient extends JFrame {
 	
 	private ReceiveFramesTask receiveFramesTask = null;
 	
-	private Socket socket = null;
+	private DatagramSocket socket = null;
 	private LinkedList<Frame> frames = new LinkedList<>();
 	
 	static {
@@ -38,8 +44,13 @@ public class StartClient extends JFrame {
 	}
 	
 	public StartClient(){
+		
 		try {
-			socket = new Socket(HOST, PORT);
+			InetAddress add = InetAddress.getByName("localhost");
+			socket = new DatagramSocket();
+			byte[] data = NetworkCommunicationsConstants.REQUEST_CAMERA_DATA.getBytes();
+			DatagramPacket p = new DatagramPacket(data, data.length, add, PORT);
+			socket.send(p);
 			receiveFramesTask = new ReceiveFramesTask(socket, frames);
 			Thread recieveFramesThread = new Thread(receiveFramesTask);
 			recieveFramesThread.start();
@@ -58,7 +69,7 @@ public class StartClient extends JFrame {
 				}
 				
 				if(socket != null){
-					try { socket.close(); } catch (IOException e1) {}
+					socket.close();
 				}
 			}
 		});

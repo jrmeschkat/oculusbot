@@ -1,11 +1,11 @@
 package com.github.jrmeschkat.oculusbot.server;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 
-import com.github.jrmeschkat.oculusbot.server.clienthandling.HandleClientTask;
+import com.github.jrmeschkat.oculusbot.constants.NetworkCommunicationsConstants;
+import com.github.jrmeschkat.oculusbot.server.clienthandling.SendFramesTask;
 
 
 public class StartServer {
@@ -17,12 +17,11 @@ public class StartServer {
 
 	}
 	
-	private ServerSocket serverSocket = null;
-	private Socket socket = null;
+	private DatagramSocket socket = null;
 	
 	public StartServer(){
 		try {
-			serverSocket = new ServerSocket(PORT);
+			socket = new DatagramSocket(PORT);
 		} catch (IOException e) {
 			System.err.println("Could not open server socket on port "+PORT+".");
 			e.printStackTrace();
@@ -34,11 +33,17 @@ public class StartServer {
 	public void start() {
 		while(true){
 			try {
-				if(serverSocket != null){
-					socket = serverSocket.accept();
+				if(socket != null){
+					byte[] buf = new byte[1024];
+					DatagramPacket p = new DatagramPacket(buf, buf.length);
+					socket.receive(p);
+					String msg = new String(p.getData()).trim();
+					if(msg.equals(NetworkCommunicationsConstants.REQUEST_CAMERA_DATA)){
+						System.out.println("Recieved request from "+p.getAddress().getHostAddress()+": "+msg);
+						Thread client = new Thread(new SendFramesTask(socket, p.getAddress(), p.getPort()));
+						client.start();
+					}
 				}
-				Thread client = new Thread(new HandleClientTask(socket));
-				client.start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

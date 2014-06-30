@@ -3,6 +3,7 @@
 	<name>OculusBotServer</name>
 	<comment></comment>
 	<projects>
+		<project>OculusBotConstants</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
