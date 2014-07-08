@@ -15,7 +15,7 @@ import org.opencv.highgui.VideoCapture;
 import com.github.jrmeschkat.oculusbot.server.clienthandling.videocapture.CaptureFrameTask;
 import com.github.jrmeschkat.oculusbot.server.clienthandling.videocapture.Frame;
 
-public class SendFramesTask implements Runnable {
+public class SendFramesThread extends Thread {
 
 	public static final int FPS = 30;
 	private DatagramSocket socket;
@@ -23,24 +23,26 @@ public class SendFramesTask implements Runnable {
 	private int port;
 	private VideoCapture capture;
 	private	LinkedList<Frame> frames = new LinkedList<Frame>();
+	private ScheduledThreadPoolExecutor exe;
 
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
-	public SendFramesTask(DatagramSocket socket, InetAddress clientAddress, int port) {
+	public SendFramesThread(DatagramSocket socket, InetAddress clientAddress, int port) {
 		this.socket = socket;
 		this.clientAddress = clientAddress;
 		this.port = port;
 		capture = new VideoCapture(0);
 		CaptureFrameTask captureFrameTask = new CaptureFrameTask(capture, frames);
-		new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(captureFrameTask, 0, 1000 / FPS, TimeUnit.MILLISECONDS);
+		exe = new ScheduledThreadPoolExecutor(1);
+		exe.scheduleWithFixedDelay(captureFrameTask, 0, 1000 / FPS, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
 	public void run() {
 		DatagramPacket p;
-		while (true) {
+		while (!isInterrupted()) {
 			try {
 				Frame f = frames.removeLast();
 				byte[] buffer = f.getFrame().toArray();
@@ -51,5 +53,11 @@ public class SendFramesTask implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		
+		if(exe != null){
+			exe.shutdown();
+		}
+		
+		capture.release();
 	}
 }

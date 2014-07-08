@@ -25,6 +25,7 @@ public class DrawFrameTask implements Runnable {
 			// return;
 			// } 
 			BufferedImage img = matToBufferedImage(frame.getFrame());
+			
 			canvas.setCurrent(img);
 			canvas.repaint();
 		} catch (NoSuchElementException e) {

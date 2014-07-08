@@ -8,7 +8,9 @@ abstract public class WindowClosingListner implements WindowListener {
 	public void windowActivated(WindowEvent e) {}
 
 	@Override
-	public void windowClosing(WindowEvent e) {}
+	public void windowClosing(WindowEvent e){
+		windowClosed(e);
+	}
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {}
