@@ -29,11 +29,11 @@ public class SendFramesThread extends Thread {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
-	public SendFramesThread(DatagramSocket socket, InetAddress clientAddress, int port) {
+	public SendFramesThread(DatagramSocket socket, InetAddress clientAddress, int port, int videoDeviceID) {
 		this.socket = socket;
 		this.clientAddress = clientAddress;
 		this.port = port;
-		capture = new VideoCapture(0);
+		capture = new VideoCapture(videoDeviceID);
 		CaptureFrameTask captureFrameTask = new CaptureFrameTask(capture, frames);
 		exe = new ScheduledThreadPoolExecutor(1);
 		exe.scheduleWithFixedDelay(captureFrameTask, 0, 1000 / FPS, TimeUnit.MILLISECONDS);
@@ -60,4 +60,5 @@ public class SendFramesThread extends Thread {
 		
 		capture.release();
 	}
+	
 }

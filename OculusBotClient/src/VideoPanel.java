@@ -20,7 +20,7 @@ import org.opencv.highgui.VideoCapture;
 public class VideoPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private BufferedImage current;
-	private int FPS = 15;
+	private int FPS = 30;
 	private int posX;
 	private int posY;
 

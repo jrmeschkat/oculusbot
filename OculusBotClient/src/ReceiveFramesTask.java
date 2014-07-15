@@ -8,14 +8,11 @@ import org.opencv.core.MatOfByte;
 
 public class ReceiveFramesTask extends Thread {
 	
-	private LinkedList<Frame> framesLeft;
-	private LinkedList<Frame> framesRight;
+	private LinkedList<Frame> frames;
 	private DatagramSocket socket;
-	private boolean running = true;
 	
-	public ReceiveFramesTask(DatagramSocket socket, LinkedList<Frame> framesLeft, LinkedList<Frame> framesRight){
-		this.framesRight = framesRight;
-		this.framesLeft = framesLeft;
+	public ReceiveFramesTask(DatagramSocket socket, LinkedList<Frame> frames){
+		this.frames = frames;
 		this.socket = socket;
 	}
 	
@@ -23,7 +20,6 @@ public class ReceiveFramesTask extends Thread {
 	public void run() {
 		byte[] data;
 		DatagramPacket p;
-		boolean left = true;
 		while(!isInterrupted()){
 			try {
 				//FIXME buffer size
@@ -31,15 +27,8 @@ public class ReceiveFramesTask extends Thread {
 				p = new DatagramPacket(data, data.length);
 				socket.receive(p);
 				MatOfByte buffer = new MatOfByte(data);
-				//FIXME get "real" left and right frame
-				if(left){
-					//FIXME timestamp
-					framesLeft.addFirst(new Frame(buffer, System.currentTimeMillis()));
-					left = false;
-				} else {
-					framesRight.addFirst(new Frame(buffer, System.currentTimeMillis()));
-					left = true;
-				}
+				//FIXME timestamp
+				frames.addFirst(new Frame(buffer, System.currentTimeMillis()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -19,6 +19,8 @@ public class DrawFrameTask implements Runnable {
 
 	@Override
 	public void run() {
+		if(frames.isEmpty())
+			return;
 		try {
 			Frame frame = frames.removeLast();
 			// if(System.currentTimeMillis() - frame.getTimestamp() > FRAMEDROPLIMIT){

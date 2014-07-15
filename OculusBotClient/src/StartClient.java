@@ -23,9 +23,11 @@ public class StartClient extends JFrame {
 	// public static final String HOST = "192.168.178.39";
 	public static final int PORT = 1337;
 
-	private ReceiveFramesTask receiveFramesTask = null;
+	private ReceiveFramesTask receiveLeftFramesTask = null;
+	private ReceiveFramesTask receiveRightFramesTask = null;
 
-	private DatagramSocket socket = null;
+	private DatagramSocket leftSocket = null;
+	private DatagramSocket rightSocket = null;
 	private LinkedList<Frame> framesLeft = new LinkedList<>();
 	private LinkedList<Frame> framesRight = new LinkedList<>();
 
@@ -38,12 +40,17 @@ public class StartClient extends JFrame {
 	}
 
 	public StartClient() {
-
 		try {
+			leftSocket = new DatagramSocket();
+			rightSocket = new DatagramSocket();
+			
 			sendMsg(NetworkCommunicationsConstants.REQUEST_CAMERA_DATA);
-			receiveFramesTask = new ReceiveFramesTask(socket, framesLeft, framesRight);
-			Thread recieveFramesThread = new Thread(receiveFramesTask);
-			recieveFramesThread.start();
+			receiveLeftFramesTask = new ReceiveFramesTask(leftSocket, framesLeft);
+			receiveRightFramesTask = new ReceiveFramesTask(rightSocket, framesRight);
+			Thread recieveLeftFramesThread = new Thread(receiveLeftFramesTask);
+			Thread recieveRightFramesThread = new Thread(receiveRightFramesTask);
+			recieveLeftFramesThread.start();
+			recieveRightFramesThread.start();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -55,7 +62,8 @@ public class StartClient extends JFrame {
 			@Override
 			public void windowClosed(WindowEvent e) {
 				System.out.println("CLOSING WINDOW");
-				receiveFramesTask.interrupt();
+				receiveLeftFramesTask.interrupt();
+				receiveRightFramesTask.interrupt();
 
 				try {
 					sendMsg(NetworkCommunicationsConstants.END_CONNECTION);
@@ -66,8 +74,9 @@ public class StartClient extends JFrame {
 				}
 
 				// FIXME wait for "DONE"
-				if (socket != null) {
-					socket.close();
+				if (leftSocket != null) {
+					leftSocket.close();
+					rightSocket.close();
 				}
 			}
 
@@ -88,10 +97,9 @@ public class StartClient extends JFrame {
 
 	private void sendMsg(String msg) throws UnknownHostException, IOException {
 		InetAddress add = InetAddress.getByName(HOST);
-		socket = new DatagramSocket();
 		byte[] data = msg.getBytes();
 		DatagramPacket p = new DatagramPacket(data, data.length, add, PORT);
-		socket.send(p);
+		leftSocket.send(p);
 	}
 
 }
