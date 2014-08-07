@@ -19,8 +19,8 @@ import javax.swing.BoxLayout;
 public class StartClient extends JFrame {
 	private static final long serialVersionUID = 1L;
 	// TODO find server on network
-	public static final String HOST = "localhost";
-	// public static final String HOST = "192.168.178.39";
+//	public static final String HOST = "localhost";
+	 public static final String HOST = "192.168.178.39";
 	public static final int PORT = 1337;
 
 	private ReceiveFramesTask receiveLeftFramesTask = null;

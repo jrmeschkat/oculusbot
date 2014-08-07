@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.LinkedList;
 
 import org.opencv.core.MatOfByte;
@@ -29,7 +30,8 @@ public class ReceiveFramesTask extends Thread {
 				MatOfByte buffer = new MatOfByte(data);
 				//FIXME timestamp
 				frames.addFirst(new Frame(buffer, System.currentTimeMillis()));
-			} catch (IOException e) {
+			} catch (SocketException se) {} 
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
