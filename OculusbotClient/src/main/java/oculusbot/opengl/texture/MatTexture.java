@@ -18,6 +18,8 @@ import static org.lwjgl.opengl.GL11.glPixelStorei;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -35,13 +37,13 @@ public class MatTexture {
 	private Mat frame;
 	private ByteBuffer buffer;
 	private ReceiveVideoThread video;
+	private int texture;
 
 	public MatTexture(ReceiveVideoThread video) {
 		this.video = video;
 	}
 
 	public int grabTexture() {
-		
 		frame = video.getFrame();
 
 		int size = frame.rows() * frame.cols() * 3;
@@ -50,7 +52,9 @@ public class MatTexture {
 		frame.get(0, 0, data);
 		buffer.put(data).flip();
 
-		int texture = glGenTextures();
+		glDeleteTextures(texture);
+		
+		texture = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, (int) (frame.step1() / frame.elemSize()));
@@ -62,5 +66,5 @@ public class MatTexture {
 
 		return texture;
 	}
-
+	
 }

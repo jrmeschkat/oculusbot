@@ -36,6 +36,9 @@ import org.lwjgl.ovr.OVRUtil;
 import org.lwjgl.ovr.OVRVector3f;
 
 import oculusbot.opengl.FrameBufferObject;
+import oculusbot.opengl.Renderable;
+import oculusbot.opengl.renderable.MatCanvas;
+import oculusbot.video.ReceiveVideoThread;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL;
@@ -54,7 +57,7 @@ public class Rift {
 	private PointerBuffer layers;
 	private int textureWidth;
 	private int textureHeight;
-	private Scene scene;
+	private Renderable canvas;
 
 	public long getSession() {
 		return session;
@@ -64,8 +67,8 @@ public class Rift {
 		ovr_RecenterTrackingOrigin(session);
 	}
 
-	public Rift(Scene scene) {
-		this.scene = scene;
+	public Rift(ReceiveVideoThread video) {
+		canvas = new MatCanvas(video);
 		//check if oculus and services is available
 		OVRDetectResult detect = OVRDetectResult.calloc();
 		ovr_Detect(0, detect);
@@ -129,8 +132,6 @@ public class Rift {
 	}
 
 	public void init() {
-		//FIXME is this needed here?
-		GL.createCapabilities();
 
 		float pixelsPerDisplayPixel = 1;
 		OVRSizei leftTextureSize = OVRSizei.malloc();
@@ -195,10 +196,11 @@ public class Rift {
 		layers = BufferUtils.createPointerBuffer(1);
 		layers.put(0, layer0);
 
-		scene.init();
+		canvas.init();
 	}
 
 	public void render() {
+		System.gc();
 		ovr_GetSessionStatus(session, sessionStatus);
 		if (!sessionStatus.IsVisible() || sessionStatus.ShouldQuit()) {
 			return;
@@ -234,8 +236,7 @@ public class Rift {
 			fbos[index].bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glViewport(0, 0, textureWidth, textureHeight);
-			scene.setEye(eye);
-			scene.render();
+			canvas.render();
 			fbos[index].unbind();
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -251,7 +252,7 @@ public class Rift {
 		}
 	}
 
-	public void destroy() throws NullPointerException {
+	public boolean destroy() throws NullPointerException {
 		for (OVRMatrix4f projection : projections) {
 			projection.free();
 		}
@@ -262,7 +263,7 @@ public class Rift {
 
 		layer0.free();
 		sessionStatus.free();
-		scene.destroy();
+		canvas.destroy();
 		hmdDesc.free();
 
 		if (chain != 0) {
@@ -271,6 +272,7 @@ public class Rift {
 
 		ovr_Destroy(session);
 		ovr_Shutdown();
+		return true;
 	}
 
 	public int getMirrorFramebuffer(int width, int height) {

@@ -8,19 +8,20 @@ import org.lwjgl.ovr.OVRTrackingState;
 
 import static org.lwjgl.ovr.OVR.*;
 import oculusbot.network.NetworkThread;
+import oculusbot.rift.RenderThread;
 import oculusbot.rift.Rift;
 
 public class SendPositionDataThread extends NetworkThread {
 	private static final double SEND_LIMIT = 2.5;
-	private Rift rift;
 	private double oldYaw = 180;
 	private double oldPitch = 180;
 	private double oldRoll = 180;
+	private Rift rift;
 
 	private double yaw;
 	private double pitch;
 	private double roll;
-
+	
 	public SendPositionDataThread(String ip, int port, Rift rift) {
 		super(ip, port);
 		this.rift = rift;
@@ -28,6 +29,9 @@ public class SendPositionDataThread extends NetworkThread {
 
 	@Override
 	protected void doNetworkOperation() throws IOException {
+		if (rift == null) {
+			return;
+		}
 		OVRTrackingState trackingState = OVRTrackingState.malloc();
 		ovr_GetTrackingState(rift.getSession(), 0, true, trackingState);
 		OVRPosef pose = trackingState.HeadPose().ThePose();
@@ -46,7 +50,6 @@ public class SendPositionDataThread extends NetworkThread {
 		}
 	}
 
-
 	private boolean checkLimit() {
 		if (Math.abs(oldYaw - yaw) > SEND_LIMIT) {
 			return true;
@@ -62,6 +65,11 @@ public class SendPositionDataThread extends NetworkThread {
 
 	private double toDeg(double rad) {
 		return Math.toDegrees(rad);
+	}
+	
+	@Override
+	protected void shutdown() {
+		super.shutdown();
 	}
 
 }

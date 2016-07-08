@@ -52,16 +52,18 @@
 						<configuration>
 							<target>
 								<scp file="target/${filename}.jar" toDir="pi@${ip}:/home/pi/java/${filename}.jar"
-									password="raspberry" trust="yes" />
+									trust="yes" password="raspberry" />
+								<scp file="server.cfg" toDir="pi@${ip}:/home/pi/java/server.cfg"
+									trust="yes" password="raspberry" />
 							</target>
 						</configuration>
 					</execution>
 				</executions>
 				<dependencies>
 					<dependency>
-						<groupId>ant</groupId>
+						<groupId>org.apache.ant</groupId>
 						<artifactId>ant-jsch</artifactId>
-						<version>1.6.5</version>
+						<version>1.9.7</version>
 					</dependency>
 					<dependency>
 						<groupId>com.jcraft</groupId>
