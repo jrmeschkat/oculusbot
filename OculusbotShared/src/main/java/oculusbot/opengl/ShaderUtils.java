@@ -1,6 +1,8 @@
 package oculusbot.opengl;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -21,6 +23,38 @@ public class ShaderUtils {
 		String fragmentShaderSrc;
 		vertexShaderSrc = loadFile(vertexShaderFilename);
 		fragmentShaderSrc = loadFile(fragmentShaderFilename);
+
+		int program = glCreateProgram();
+		int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSrc);
+		int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSrc);
+		glAttachShader(program, vertexShader);
+		glAttachShader(program, fragmentShader);
+		glLinkProgram(program);
+
+		int status = glGetShaderi(program, GL_LINK_STATUS);
+		if (status == GL_FALSE) {
+			System.err.println("Linker failure: " + glGetProgramInfoLog(program));
+		}
+
+		glDetachShader(program, vertexShader);
+		glDetachShader(program, fragmentShader);
+
+		return program;
+	}
+	
+	/**
+	 * Creates a shader program which can be used by OpenGL.
+	 * 
+	 * @param vertexShaderStream
+	 * @param fragmentShaderStream
+	 * @return handler for the shader program as int
+	 */
+	public static int createShaderProgram(InputStream vertexShaderStream, InputStream fragmentShaderStream)
+			throws FileNotFoundException {
+		String vertexShaderSrc;
+		String fragmentShaderSrc;
+		vertexShaderSrc = loadFile(vertexShaderStream);
+		fragmentShaderSrc = loadFile(fragmentShaderStream);
 
 		int program = glCreateProgram();
 		int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSrc);
@@ -73,8 +107,20 @@ public class ShaderUtils {
 	 * @throws FileNotFoundException
 	 */
 	private static String loadFile(String filename) throws FileNotFoundException {
+		return loadFile(new FileInputStream(filename));
+	}
+	
+	/**
+	 * Loads a text file.
+	 * 
+	 * @param filename
+	 *            - name/path for the file
+	 * @return Content of the file as string with newlines
+	 * @throws FileNotFoundException
+	 */
+	private static String loadFile(InputStream stream) throws FileNotFoundException {
 		StringBuffer buffer = new StringBuffer();
-		Scanner in = new Scanner(new File(filename));
+		Scanner in = new Scanner(stream);
 		while (in.hasNextLine()) {
 			buffer.append(in.nextLine() + "\n");
 		}
