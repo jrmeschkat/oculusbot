@@ -9,7 +9,7 @@ import oculusbot.basic.ClientProperties;
 import oculusbot.basic.PropertyLoader;
 import oculusbot.basic.StatusThread;
 import oculusbot.network.client.SendPositionDataThread;
-import oculusbot.network.client.ServerDiscovery;
+import oculusbot.network.client.Communications;
 import oculusbot.opengl.Callback;
 import oculusbot.opengl.Window;
 import oculusbot.video.ReceiveVideoThread;
@@ -23,6 +23,9 @@ public class RenderThread extends StatusThread {
 	private int width;
 	private int height;
 	private PropertyLoader props;
+	private Communications com;
+	private boolean doDiscovery = true;
+	private String ip;
 
 	public Rift getRift() {
 		return rift;
@@ -32,12 +35,24 @@ public class RenderThread extends StatusThread {
 		this.width = width;
 		this.height = height;
 	}
+	
+	public RenderThread(int width, int height, String ip) {
+		this.width = width;
+		this.height = height;
+		this.ip = ip;
+		doDiscovery = false;
+	}
 
 	@Override
 	protected void setup() {
+		System.out.println(ip);
 		props = new PropertyLoader(ClientProperties.PROPERTY_FILENAME, ClientProperties.DEFAULT_PROPERTY_FILENAME);
-		InetAddress serverIP = new ServerDiscovery().getServerIP(props.getPropertyAsInt(ClientProperties.PORT_DISCOVERY));
-		String ip = serverIP.getHostAddress();
+		com = new Communications(props.getPropertyAsInt(ClientProperties.PORT_DISCOVERY));
+		if(doDiscovery){
+			InetAddress serverIP = com.getServerIP();
+			ip = serverIP.getHostAddress();
+		}
+		com.registerClient();
 		window = new Window(width, height);
 		window.setCallback(new Callback() {
 
@@ -45,6 +60,8 @@ public class RenderThread extends StatusThread {
 				if (action == GLFW_RELEASE) {
 					if (key == GLFW_KEY_R) {
 						rift.recenter();
+					} else {
+						com.sendKey(key);
 					}
 				}
 			}
@@ -56,7 +73,7 @@ public class RenderThread extends StatusThread {
 
 		window.register(new MirrorWindow(rift.getMirrorFramebuffer(width, height), width, height));
 		rift.init();
-		
+
 		position = new SendPositionDataThread(ip, props.getPropertyAsInt(ClientProperties.PORT_POSITION), rift);
 		position.start();
 
@@ -64,11 +81,11 @@ public class RenderThread extends StatusThread {
 
 	@Override
 	protected void task() {
-		if(window.shouldClose()){
+		if (window.shouldClose()) {
 			interrupt();
 			return;
 		}
-		
+
 		rift.render();
 		window.render();
 	}
@@ -78,8 +95,10 @@ public class RenderThread extends StatusThread {
 		position.interrupt();
 		video.interrupt();
 		waitForClosingThreads(position, video);
-		while(!rift.destroy());
+		while (!rift.destroy())
+			;
 		window.destroy();
+		com.deregisterClient();
 	}
 
 }

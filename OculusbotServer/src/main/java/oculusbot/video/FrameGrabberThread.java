@@ -51,7 +51,8 @@ public class FrameGrabberThread extends StatusThread {
 	@Override
 	protected void task() {
 		Mat m = new Mat();
-		Mat left, right;
+		Mat left = new Mat();
+		Mat right = new Mat();
 		if(switchCams){
 			left = leftThread.getFrame();
 			right = rightThread.getFrame();
@@ -59,7 +60,7 @@ public class FrameGrabberThread extends StatusThread {
 			right = leftThread.getFrame();
 			left = rightThread.getFrame();
 		}
-		if (left == null || right == null) {
+		if (left == null || left.empty() || right == null || right.empty()) {
 			return;
 		}
 

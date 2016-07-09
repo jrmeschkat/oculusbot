@@ -64,8 +64,16 @@ public abstract class NetworkThread extends StatusThread {
 	}
 
 	protected void send(String data, DatagramPacket receiver) throws IOException {
-		buffer = data.getBytes();
-		DatagramPacket out = new DatagramPacket(buffer, buffer.length, receiver.getAddress(), receiver.getPort());
+		send(data.getBytes(), receiver.getAddress(), receiver.getPort());
+	}
+	
+	protected void send(byte[] data, String ip) throws IOException {
+		send(data, InetAddress.getByName(ip), port);
+	}
+	
+	protected void send(byte[] data, InetAddress receiver, int port) throws IOException {
+		buffer = data;
+		DatagramPacket out = new DatagramPacket(buffer, buffer.length, receiver, port);
 		socket.send(out);
 	}
 

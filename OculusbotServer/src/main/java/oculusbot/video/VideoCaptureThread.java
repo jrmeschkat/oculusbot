@@ -15,20 +15,20 @@ public class VideoCaptureThread extends StatusThread {
 
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 300;
-	
+
 	private VideoCapture cam;
 	private Mat frame;
 	private int camId;
+	private int count = 0;
 
 	public Mat getFrame() {
-		return frame;
+			return frame;
 	}
 
 	public VideoCaptureThread(int camId) {
 		this.camId = camId;
 	}
 
-	
 	@Override
 	protected void setup() {
 		cam = new VideoCapture();
@@ -40,15 +40,19 @@ public class VideoCaptureThread extends StatusThread {
 			throw new IllegalStateException("Couldn't open cam: " + camId);
 		}
 	}
-	
+
 	@Override
 	protected void task() {
+		if(count++ > 100){
+			System.gc();
+			count = 0;
+		}
 		Mat buffer = new Mat();
 		cam.grab();
 		cam.retrieve(buffer);
 		frame = buffer;
 	}
-	
+
 	@Override
 	protected void shutdown() {
 		cam.release();

@@ -1,48 +1,46 @@
 package oculusbot.video;
 
 import java.io.IOException;
-import java.net.SocketException;
-
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.imgcodecs.Imgcodecs;
+import java.util.LinkedList;
 
 import oculusbot.network.NetworkThread;
 
 public class SendVideoThread extends NetworkThread {
 	private FrameGrabberThread frameGrabber;
+	private LinkedList<String> clients;
 
 	public SendVideoThread(int port) {
 		super(port);
-		
+		clients = new LinkedList<>();
 	}
-	
+
 	@Override
 	public Status getStatus() {
 		return passthroughStatus(frameGrabber);
 	}
-	
+
 	@Override
 	protected void setup() {
 		super.setup();
-		try {
-			socket.setBroadcast(true);
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
 		frameGrabber = new FrameGrabberThread();
 		frameGrabber.start();
 	}
-	
-	public void switchCameras(){
+
+	public void switchCameras() {
 		frameGrabber.switchCameras();
 	}
 
 	@Override
 	protected void doNetworkOperation() throws IOException {
+		if(clients.isEmpty()){
+			pause(100);
+			return;
+		}
 		byte[] data = frameGrabber.grabFrameAsByte();
-		if (data != null){
-			send(data);
+		if (data != null) {
+			for(String ip : clients){
+				send(data, ip);
+			}
 		}
 	}
 
@@ -51,5 +49,24 @@ public class SendVideoThread extends NetworkThread {
 		frameGrabber.interrupt();
 		waitForClosingThreads(frameGrabber);
 	}
+
+	public void registerClient(String ip) {
+		for(String client : clients){
+			if(client.equals(ip)){
+				return;
+			}
+		}
+		clients.add(ip);
+	}
+
+	public void deregisterClient(String ip) {
+		for(int i = 0; i < clients.size(); i++){
+			if (clients.get(i).equals(ip)) {
+				clients.remove(i);
+				return;
+			}
+		}
+	}
+	
 
 }

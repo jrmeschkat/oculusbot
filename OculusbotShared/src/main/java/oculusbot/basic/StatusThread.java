@@ -25,6 +25,7 @@ public abstract class StatusThread extends Thread {
 
 	@Override
 	public void run() {
+		setName(getClass().getName());
 		status = Status.SETUP;
 		setup();
 		status = Status.READY;
