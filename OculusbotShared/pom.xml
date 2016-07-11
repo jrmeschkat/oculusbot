@@ -20,7 +20,7 @@
 				<version>2.5.2</version>
 				<executions>
 					<execution>
-						<id>install-lib</id>
+						<id>install-opencv</id>
 						<phase>clean</phase>
 						<configuration>
 							<file>${opencv.jar}</file>
@@ -37,7 +37,7 @@
 					</execution>
 					
 					<execution>
-						<id>install-natives</id>
+						<id>install-opencv-natives</id>
 						<phase>clean</phase>
 						<configuration>
 							<file>${opencv.natives}</file>
@@ -45,6 +45,23 @@
 							<groupId>opencv</groupId>
 							<artifactId>opencv-natives</artifactId>
 							<version>3.1.0</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+					</execution>
+					
+					<execution>
+						<id>install-lwjgl</id>
+						<phase>clean</phase>
+						<configuration>
+							<file>${lwjgl.jar}</file>
+							<repositoryLayout>default</repositoryLayout>
+							<groupId>lwjgl</groupId>
+							<artifactId>lwjgl</artifactId>
+							<version>3.0.1.8</version>
 							<packaging>jar</packaging>
 							<generatePom>true</generatePom>
 						</configuration>
@@ -62,6 +79,7 @@
 		<lwjgl.version>3.0.1-SNAPSHOT</lwjgl.version>
 		<opencv.jar>D:/libs/opencv/jar/opencv-310.jar</opencv.jar>
 		<opencv.natives>D:/libs/opencv/natives/opencv-310-natives.jar</opencv.natives>
+		<lwjgl.jar>D:/libs/lwjgl/lwjgl.jar</lwjgl.jar>
 	</properties>
 
 	<repositories>
@@ -86,6 +104,12 @@
 	</repositories>
 
 	<dependencies>
+	<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>3.0.1.8</version>
+		</dependency>
+	<!-- 
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
@@ -105,6 +129,7 @@
 			<version>${lwjgl.version}</version>
 			<classifier>natives-linux</classifier>
 		</dependency>
+	 -->
 
 		<dependency>
 			<groupId>com.pi4j</groupId>

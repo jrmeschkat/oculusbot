@@ -62,8 +62,8 @@ public class Rift {
 	public long getSession() {
 		return session;
 	}
-	
-	public void recenter(){
+
+	public void recenter() {
 		ovr_RecenterTrackingOrigin(session);
 	}
 
@@ -177,11 +177,11 @@ public class Rift {
 		for (int eye = 0; eye < 2; eye++) {
 			viewports[eye] = OVRRecti.calloc();
 		}
-		
+
 		viewports[ovrEye_Left].Pos().x(0).y(0);
-		viewports[ovrEye_Left].Size().w(textureWidth/2).h(textureHeight);
-		viewports[ovrEye_Right].Pos().x(textureWidth/2).y(0);
-		viewports[ovrEye_Right].Size().w(textureWidth/2).h(textureHeight);
+		viewports[ovrEye_Left].Size().w(textureWidth / 2).h(textureHeight);
+		viewports[ovrEye_Right].Pos().x(textureWidth / 2).y(0);
+		viewports[ovrEye_Right].Size().w(textureWidth / 2).h(textureHeight);
 
 		layer0 = OVRLayerEyeFov.calloc();
 		layer0.Header().Type(ovrLayerType_EyeFov);
