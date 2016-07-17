@@ -51,9 +51,9 @@
 						<id>default-cli</id>
 						<configuration>
 							<target>
-								<scp file="target/${filename}.jar" toDir="pi@${ip}:/home/pi/java/${filename}.jar"
+								<scp file="target/${filename}.jar" toDir="pi@${ip}:/home/pi/OculusbotServer/${filename}.jar"
 									trust="yes" password="raspberry" />
-								<scp file="server.cfg" toDir="pi@${ip}:/home/pi/java/server.cfg"
+								<scp file="server.cfg" toDir="pi@${ip}:/home/pi/OculusbotServer/server.cfg"
 									trust="yes" password="raspberry" />
 							</target>
 						</configuration>
@@ -85,6 +85,6 @@
 
 	<properties>
 		<filename>OculusbotServer</filename>
-		<ip>192.168.178.59</ip>
+		<ip>oculusbot</ip>
 	</properties>
 </project>

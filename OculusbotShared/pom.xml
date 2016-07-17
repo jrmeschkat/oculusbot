@@ -36,6 +36,7 @@
 						</goals>
 					</execution>
 					
+					<!-- 
 					<execution>
 						<id>install-opencv-natives</id>
 						<phase>clean</phase>
@@ -53,6 +54,7 @@
 						</goals>
 					</execution>
 					
+					 -->
 					<execution>
 						<id>install-lwjgl</id>
 						<phase>clean</phase>
@@ -75,13 +77,16 @@
 	</build>
 
 	<properties>
+		<!-- 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<lwjgl.version>3.0.1-SNAPSHOT</lwjgl.version>
-		<opencv.jar>D:/libs/opencv/jar/opencv-310.jar</opencv.jar>
 		<opencv.natives>D:/libs/opencv/natives/opencv-310-natives.jar</opencv.natives>
+		 -->
+		<opencv.jar>D:/libs/opencv/opencv-310.jar</opencv.jar>
 		<lwjgl.jar>D:/libs/lwjgl/lwjgl.jar</lwjgl.jar>
 	</properties>
 
+<!-- 
 	<repositories>
 		<repository>
 			<id>oss-sonatype</id>
@@ -91,7 +96,6 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-
 		<repository>
 			<id>oss-snapshots-repo</id>
 			<name>Sonatype OSS Maven Repository</name>
@@ -102,6 +106,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
+ -->
 
 	<dependencies>
 	<dependency>
@@ -129,7 +134,18 @@
 			<version>${lwjgl.version}</version>
 			<classifier>natives-linux</classifier>
 		</dependency>
+		
+		<dependency>
+			<groupId>opencv</groupId>
+			<artifactId>opencv-natives</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 	 -->
+		<dependency>
+			<groupId>opencv</groupId>
+			<artifactId>opencv</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.pi4j</groupId>
@@ -137,16 +153,5 @@
 			<version>1.1-SNAPSHOT</version>
 		</dependency>
 
-		<dependency>
-			<groupId>opencv</groupId>
-			<artifactId>opencv</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>opencv</groupId>
-			<artifactId>opencv-natives</artifactId>
-			<version>3.1.0</version>
-		</dependency>
 	</dependencies>
 </project>
