@@ -13,28 +13,36 @@ public class VideoCaptureThread extends StatusThread {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
-	private static final int WIDTH = 400;
-	private static final int HEIGHT = 300;
+	private static final int DEFAULT_WIDTH = 400;
+	private static final int DEFAULT_HEIGHT = 300;
 
 	private VideoCapture cam;
 	private Mat frame;
 	private int camId;
 	private int count = 0;
+	private int camWidth;
+	private int camHeight;
 
 	public Mat getFrame() {
-			return frame;
+		return frame;
 	}
 
 	public VideoCaptureThread(int camId) {
+		this(camId, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	}
+	
+	public VideoCaptureThread(int camId, int camWidth, int camHeight) {
 		this.camId = camId;
+		this.camWidth = camWidth;
+		this.camHeight = camHeight;
 	}
 
 	@Override
 	protected void setup() {
 		cam = new VideoCapture();
 		cam.open(camId);
-		cam.set(Videoio.CV_CAP_PROP_FRAME_WIDTH, WIDTH);
-		cam.set(Videoio.CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+		cam.set(Videoio.CV_CAP_PROP_FRAME_WIDTH, camWidth);
+		cam.set(Videoio.CV_CAP_PROP_FRAME_HEIGHT, camHeight);
 
 		if (!cam.isOpened()) {
 			throw new IllegalStateException("Couldn't open cam: " + camId);
@@ -43,7 +51,7 @@ public class VideoCaptureThread extends StatusThread {
 
 	@Override
 	protected void task() {
-		if(count++ > 100){
+		if (count++ > 100) {
 			System.gc();
 			count = 0;
 		}

@@ -6,4 +6,6 @@ public interface ServerProperties {
 	String PORT_DISCOVERY = "port.discovery";
 	String PORT_BOT = "port.bot";
 	String PORT_VIDEO = "port.video";
+	String CAM_WIDTH = "cam.width";
+	String CAM_HEIGHT = "cam.height";
 }

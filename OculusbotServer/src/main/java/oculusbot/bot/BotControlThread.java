@@ -22,10 +22,12 @@ import java.net.SocketTimeoutException;
 
 import com.pi4j.io.gpio.GpioController;
 
+import oculusbot.basic.Status;
+import oculusbot.basic.StatusThread;
 import oculusbot.network.NetworkThread;
 import oculusbot.pi.motors.MotorThread;
 
-public class BotControlThread extends NetworkThread {
+public class BotControlThread extends StatusThread {
 	private MotorThread yaw;
 	private MotorThread pitch;
 	private MotorThread roll;
@@ -56,12 +58,11 @@ public class BotControlThread extends NetworkThread {
 	}
 	
 	
-	public BotControlThread(int port, GpioController gpio) {
-		super(port);
+	public BotControlThread(GpioController gpio) {
 		this.gpio = gpio;
 	}
 	
-	private void set(double yaw, double pitch, double roll){
+	public void set(double yaw, double pitch, double roll){
 		setYaw(yaw);
 		setPitch(pitch);
 		setRoll(roll);
@@ -69,10 +70,9 @@ public class BotControlThread extends NetworkThread {
 	
 	@Override
 	protected void setup() {
-		super.setup();
-		yaw = new MotorThread(GPIO_24, GPIO_25, GPIO_08, GPIO_07, GPIO_19, gpio, 30, false);
-		pitch = new MotorThread(GPIO_14, GPIO_15, GPIO_18, GPIO_23, GPIO_26, gpio, 40, false);
-		roll = new MotorThread(GPIO_12, GPIO_16, GPIO_20, GPIO_21, GPIO_13, gpio, 30, true);
+		yaw = new MotorThread(GPIO_24, GPIO_25, GPIO_08, GPIO_07, GPIO_19, gpio, 45, false);
+		pitch = new MotorThread(GPIO_12, GPIO_16, GPIO_20, GPIO_21, GPIO_26, gpio, 40, false);
+		roll = new MotorThread(GPIO_14, GPIO_15, GPIO_18, GPIO_23, GPIO_13, gpio, 30, true);
 		yaw.start();
 		pitch.start();
 		roll.start();
@@ -83,33 +83,6 @@ public class BotControlThread extends NetworkThread {
 		return passthroughStatus(yaw, pitch, roll);
 	}
 
-	@Override
-	protected void doNetworkOperation() throws IOException {
-		DatagramPacket packet;
-		try {
-			packet = receive();
-		} catch (SocketTimeoutException e) {
-			return;
-		}
-
-		double[] values = convert(new String(packet.getData()).trim());
-		if (values != null && values.length > 2) {
-			set(values[0], values[1], values[2]);
-		}
-	}
-
-	private double[] convert(String data) {
-		String[] s = data.split(" ");
-		double[] result = new double[s.length];
-		for (int i = 0; i < s.length; i++) {
-			try {
-				result[i] = Double.parseDouble(s[i]);
-			} catch (NumberFormatException e) {
-				return null;
-			}
-		}
-		return result;
-	}
 
 	@Override
 	protected void shutdown() {
@@ -117,5 +90,10 @@ public class BotControlThread extends NetworkThread {
 		pitch.interrupt();
 		roll.interrupt();
 		waitForClosingThreads(yaw, pitch, roll);
+	}
+
+	@Override
+	protected void task() {
+		pause(1000);		
 	}
 }

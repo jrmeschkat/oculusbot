@@ -8,6 +8,7 @@ import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfInt;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import oculusbot.basic.Status;
 import oculusbot.basic.StatusThread;
 
 public class FrameGrabberThread extends StatusThread {
@@ -20,13 +21,24 @@ public class FrameGrabberThread extends StatusThread {
 	private VideoCaptureThread leftThread;
 	private VideoCaptureThread rightThread;
 	private boolean switchCams = false;
-	
+	private int camWidth;
+	private int camHeight;
+
+	public FrameGrabberThread() {
+		this(0, 0);
+	}
+
+	public FrameGrabberThread(int camWidth, int camHeight) {
+		this.camWidth = camWidth;
+		this.camHeight = camHeight;
+	}
+
 	@Override
 	public Status getStatus() {
 		return passthroughStatus(leftThread, rightThread);
 	}
-	
-	public void switchCameras(){
+
+	public void switchCameras() {
 		switchCams = !switchCams;
 	}
 
@@ -42,10 +54,15 @@ public class FrameGrabberThread extends StatusThread {
 	@Override
 	protected void setup() {
 		this.buffer = new MatOfByte();
-		leftThread = new VideoCaptureThread(0);
-		rightThread = new VideoCaptureThread(1);
+		if (camWidth > 0 && camHeight > 0) {
+			leftThread = new VideoCaptureThread(0, camWidth, camHeight);
+			rightThread = new VideoCaptureThread(1, camWidth, camHeight);
+		} else {
+			leftThread = new VideoCaptureThread(0);
+			rightThread = new VideoCaptureThread(1);
+		}
 		leftThread.start();
-		rightThread.start();		
+		rightThread.start();
 	}
 
 	@Override
@@ -53,10 +70,10 @@ public class FrameGrabberThread extends StatusThread {
 		Mat m = new Mat();
 		Mat left = new Mat();
 		Mat right = new Mat();
-		if(switchCams){
+		if (switchCams) {
 			left = leftThread.getFrame();
 			right = rightThread.getFrame();
-		} else{
+		} else {
 			right = leftThread.getFrame();
 			left = rightThread.getFrame();
 		}
@@ -68,7 +85,7 @@ public class FrameGrabberThread extends StatusThread {
 		MatOfByte buf = new MatOfByte();
 		MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_JPEG_QUALITY, QUALITY);
 		Imgcodecs.imencode(".jpg", m, buf, params);
-		buffer = buf;		
+		buffer = buf;
 	}
 
 	@Override

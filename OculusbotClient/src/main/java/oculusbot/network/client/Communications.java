@@ -53,13 +53,22 @@ public class Communications {
 		checkServerIp();
 		contactServer(OB_SEND_KEY+" "+key, server, false);
 	}
+	
+	public void sendPosition(double yaw, double pitch, double roll) {
+		checkServerIp();
+		String data = OB_POSITION_DATA + " " + yaw + " " + pitch + " " + roll;
+		try {
+			send(data, server, false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private void checkServerIp() {
 		if (server == null) {
 			getServerIP();
 		}
 	}
-	
 
 	private void contactServer(String data, String ip, boolean broadcast) {
 		try {
@@ -79,11 +88,19 @@ public class Communications {
 	}
 
 	private void send(String data, String ip) throws IOException {
-		System.out.print("Sending " + data + "...");
+		send(data, ip, true);
+	}
+
+	private void send(String data, String ip, boolean printMsg) throws IOException {
+		if (printMsg) {
+			System.out.print("Sending " + data + "...");
+		}
 		buf = data.getBytes();
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, InetAddress.getByName(ip), port);
 		socket.send(packet);
-		System.out.println("DONE");
+		if(printMsg){
+			System.out.println("DONE");
+		}
 	}
 
 	private boolean waitForAck() throws IOException {

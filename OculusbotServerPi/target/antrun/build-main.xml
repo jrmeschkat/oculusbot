@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <scp trust="yes" password="raspberry" file="target/OculusbotServer.jar" toDir="pi@oculusbot:/home/pi/OculusbotServerRMI/OculusbotServer.jar"/>
+</target>
+</project>

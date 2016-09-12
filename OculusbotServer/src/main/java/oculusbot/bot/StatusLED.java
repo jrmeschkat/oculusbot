@@ -5,7 +5,7 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
-import oculusbot.basic.StatusThread.Status;
+import oculusbot.basic.Status;
 
 public class StatusLED {
 	private static final long BLINK_FAST = 200;

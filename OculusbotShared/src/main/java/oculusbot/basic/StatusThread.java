@@ -1,10 +1,6 @@
 package oculusbot.basic;
 
 public abstract class StatusThread extends Thread {
-	public enum Status {
-		DEAD, READY, SETUP, EVENT
-	}
-
 	protected Status status = Status.DEAD;
 	protected boolean ignoreStatus = false;
 

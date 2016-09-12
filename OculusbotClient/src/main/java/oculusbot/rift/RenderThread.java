@@ -74,7 +74,7 @@ public class RenderThread extends StatusThread {
 		window.register(new MirrorWindow(rift.getMirrorFramebuffer(width, height), width, height));
 		rift.init();
 
-		position = new SendPositionDataThread(ip, props.getPropertyAsInt(ClientProperties.PORT_POSITION), rift);
+		position = new SendPositionDataThread(this, rift);
 		position.start();
 
 	}
@@ -99,6 +99,10 @@ public class RenderThread extends StatusThread {
 			;
 		window.destroy();
 		com.deregisterClient();
+	}
+	
+	public void sendPosition(double yaw, double pitch, double roll) {
+		com.sendPosition(yaw, pitch, roll);
 	}
 
 }

@@ -17,24 +17,34 @@ public abstract class NetworkThread extends StatusThread {
 	protected DatagramSocket socket;
 	protected byte[] buffer;
 	protected int packetSize = DEFAULT_PACKAGE_SIZE;
+	protected boolean staticPort = true;
 
 	public void setPacketSize(int packetSize) {
 		this.packetSize = packetSize;
 	}
 
-	public NetworkThread(String ip, int port) {
+	public NetworkThread(String ip, Integer port) {
 		this.ip = ip;
 		this.port = port;
 	}
 
-	public NetworkThread(int port) {
+	public NetworkThread(Integer port) {
 		this(DEFAULT_IP, port);
 	}
-	
+
+	public NetworkThread(int port, boolean staticPort) {
+		this(port);
+		this.staticPort = staticPort;
+	}
+
 	@Override
 	protected void setup() {
 		try {
-			socket = new DatagramSocket(port);
+			if (staticPort) {
+				socket = new DatagramSocket(port);
+			} else {
+				socket = new DatagramSocket();
+			}
 			socket.setSoTimeout(DEFAULT_TIMEOUT);
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -49,11 +59,11 @@ public abstract class NetworkThread extends StatusThread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	protected void shutdown() {
 	}
-	
+
 	protected abstract void doNetworkOperation() throws IOException;
 
 	protected DatagramPacket receive() throws SocketTimeoutException, IOException {
@@ -66,11 +76,11 @@ public abstract class NetworkThread extends StatusThread {
 	protected void send(String data, DatagramPacket receiver) throws IOException {
 		send(data.getBytes(), receiver.getAddress(), receiver.getPort());
 	}
-	
-	protected void send(byte[] data, String ip) throws IOException {
+
+	protected void send(byte[] data, String ip, int port) throws IOException {
 		send(data, InetAddress.getByName(ip), port);
 	}
-	
+
 	protected void send(byte[] data, InetAddress receiver, int port) throws IOException {
 		buffer = data;
 		DatagramPacket out = new DatagramPacket(buffer, buffer.length, receiver, port);
@@ -97,6 +107,5 @@ public abstract class NetworkThread extends StatusThread {
 		DatagramPacket out = new DatagramPacket(buffer, buffer.length, address, port);
 		socket.send(out);
 	}
-
-
+	
 }

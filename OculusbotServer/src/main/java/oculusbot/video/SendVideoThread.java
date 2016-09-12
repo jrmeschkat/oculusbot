@@ -3,15 +3,20 @@ package oculusbot.video;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import oculusbot.basic.Status;
 import oculusbot.network.NetworkThread;
 
 public class SendVideoThread extends NetworkThread {
 	private FrameGrabberThread frameGrabber;
 	private LinkedList<String> clients;
+	private int camWidth = 0;
+	private int camHeight = 0;
 
-	public SendVideoThread(int port) {
-		super(port);
+	public SendVideoThread(int port, int camWidth, int camHeight) {
+		super(port, false);
 		clients = new LinkedList<>();
+		this.camWidth = camWidth;
+		this.camHeight = camHeight;
 	}
 
 	@Override
@@ -22,7 +27,11 @@ public class SendVideoThread extends NetworkThread {
 	@Override
 	protected void setup() {
 		super.setup();
-		frameGrabber = new FrameGrabberThread();
+		if(camHeight > 0 && camWidth > 0){
+			frameGrabber = new FrameGrabberThread(camWidth, camHeight);
+		} else {
+			frameGrabber = new FrameGrabberThread();
+		}
 		frameGrabber.start();
 	}
 
@@ -39,7 +48,7 @@ public class SendVideoThread extends NetworkThread {
 		byte[] data = frameGrabber.grabFrameAsByte();
 		if (data != null) {
 			for(String ip : clients){
-				send(data, ip);
+				send(data, ip, port);
 			}
 		}
 	}

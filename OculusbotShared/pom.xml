@@ -54,7 +54,6 @@
 						</goals>
 					</execution>
 					
-					 -->
 					<execution>
 						<id>install-lwjgl</id>
 						<phase>clean</phase>
@@ -71,6 +70,8 @@
 							<goal>install-file</goal>
 						</goals>
 					</execution>
+					 -->
+					
 				</executions>
 			</plugin>
 		</plugins>
@@ -79,14 +80,13 @@
 	<properties>
 		<!-- 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<lwjgl.version>3.0.1-SNAPSHOT</lwjgl.version>
 		<opencv.natives>D:/libs/opencv/natives/opencv-310-natives.jar</opencv.natives>
 		 -->
+		<lwjgl.version>3.0.1-SNAPSHOT</lwjgl.version>
 		<opencv.jar>D:/libs/opencv/opencv-310.jar</opencv.jar>
 		<lwjgl.jar>D:/libs/lwjgl/lwjgl.jar</lwjgl.jar>
 	</properties>
 
-<!-- 
 	<repositories>
 		<repository>
 			<id>oss-sonatype</id>
@@ -96,6 +96,8 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+<!-- 
+		
 		<repository>
 			<id>oss-snapshots-repo</id>
 			<name>Sonatype OSS Maven Repository</name>
@@ -105,19 +107,31 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
-	</repositories>
  -->
+	</repositories>
 
 	<dependencies>
-	<dependency>
-			<groupId>lwjgl</groupId>
-			<artifactId>lwjgl</artifactId>
-			<version>3.0.1.8</version>
-		</dependency>
-	<!-- 
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
+			<version>${lwjgl.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-glfw</artifactId>
+			<version>${lwjgl.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-opengl</artifactId>
+			<version>${lwjgl.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-ovr</artifactId>
 			<version>${lwjgl.version}</version>
 		</dependency>
 
@@ -126,6 +140,12 @@
 			<artifactId>lwjgl-platform</artifactId>
 			<version>${lwjgl.version}</version>
 			<classifier>natives-windows</classifier>
+		</dependency>
+	<!-- 
+	<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>3.0.1.8</version>
 		</dependency>
 
 		<dependency>
@@ -150,7 +170,7 @@
 		<dependency>
 			<groupId>com.pi4j</groupId>
 			<artifactId>pi4j-core</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
 
 	</dependencies>
