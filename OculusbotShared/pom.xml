@@ -7,15 +7,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<artifactId>maven-install-plugin</artifactId>
 				<version>2.5.2</version>
 				<executions>
@@ -35,55 +26,17 @@
 							<goal>install-file</goal>
 						</goals>
 					</execution>
-					
-					<!-- 
-					<execution>
-						<id>install-opencv-natives</id>
-						<phase>clean</phase>
-						<configuration>
-							<file>${opencv.natives}</file>
-							<repositoryLayout>default</repositoryLayout>
-							<groupId>opencv</groupId>
-							<artifactId>opencv-natives</artifactId>
-							<version>3.1.0</version>
-							<packaging>jar</packaging>
-							<generatePom>true</generatePom>
-						</configuration>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-					</execution>
-					
-					<execution>
-						<id>install-lwjgl</id>
-						<phase>clean</phase>
-						<configuration>
-							<file>${lwjgl.jar}</file>
-							<repositoryLayout>default</repositoryLayout>
-							<groupId>lwjgl</groupId>
-							<artifactId>lwjgl</artifactId>
-							<version>3.0.1.8</version>
-							<packaging>jar</packaging>
-							<generatePom>true</generatePom>
-						</configuration>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-					</execution>
-					 -->
-					
+
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
 
 	<properties>
-		<!-- 
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<opencv.natives>D:/libs/opencv/natives/opencv-310-natives.jar</opencv.natives>
-		 -->
 		<lwjgl.version>3.0.1-SNAPSHOT</lwjgl.version>
 		<opencv.jar>D:/libs/opencv/opencv-310.jar</opencv.jar>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<lwjgl.jar>D:/libs/lwjgl/lwjgl.jar</lwjgl.jar>
 	</properties>
 
@@ -92,37 +45,30 @@
 			<id>oss-sonatype</id>
 			<name>oss-sonatype</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-<!-- 
-		
-		<repository>
-			<id>oss-snapshots-repo</id>
-			<name>Sonatype OSS Maven Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
- -->
 	</repositories>
 
 	<dependencies>
+		<!-- lwjgl dependencies -->
+		<!-- libraries -->
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
 			<version>${lwjgl.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-glfw</artifactId>
 			<version>${lwjgl.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl-opengl</artifactId>
@@ -134,33 +80,8 @@
 			<artifactId>lwjgl-ovr</artifactId>
 			<version>${lwjgl.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.lwjgl</groupId>
-			<artifactId>lwjgl-platform</artifactId>
-			<version>${lwjgl.version}</version>
-			<classifier>natives-windows</classifier>
-		</dependency>
-	<!-- 
-	<dependency>
-			<groupId>lwjgl</groupId>
-			<artifactId>lwjgl</artifactId>
-			<version>3.0.1.8</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.lwjgl</groupId>
-			<artifactId>lwjgl-platform</artifactId>
-			<version>${lwjgl.version}</version>
-			<classifier>natives-linux</classifier>
-		</dependency>
 		
-		<dependency>
-			<groupId>opencv</groupId>
-			<artifactId>opencv-natives</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-	 -->
+		<!-- other dependencies -->
 		<dependency>
 			<groupId>opencv</groupId>
 			<artifactId>opencv</artifactId>

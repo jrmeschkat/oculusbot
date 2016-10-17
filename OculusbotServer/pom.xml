@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>oculusbot</groupId>
-	<artifactId>OculusbotServer</artifactId>
+	<artifactId>OculusbotServerMain</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<build>
 		<plugins>
@@ -26,7 +26,7 @@
 					<finalName>${filename}</finalName>
 					<archive>
 						<manifest>
-							<mainClass>oculusbot.network.server.OculusbotServerMain</mainClass>
+							<mainClass>${mainClass}</mainClass>
 							<addClasspath>true</addClasspath>
 						</manifest>
 					</archive>
@@ -41,37 +41,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<phase>deploy</phase>
-						<id>default-cli</id>
-						<configuration>
-							<target>
-								<scp file="target/${filename}.jar" toDir="pi@${ip}:/home/pi/OculusbotServer/${filename}.jar"
-									trust="yes" password="raspberry" />
-								<scp file="server.cfg" toDir="pi@${ip}:/home/pi/OculusbotServer/server.cfg"
-									trust="yes" password="raspberry" />
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.ant</groupId>
-						<artifactId>ant-jsch</artifactId>
-						<version>1.9.7</version>
-					</dependency>
-					<dependency>
-						<groupId>com.jcraft</groupId>
-						<artifactId>jsch</artifactId>
-						<version>0.1.53</version>
-					</dependency>
-				</dependencies>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -81,9 +50,15 @@
 			<artifactId>OculusbotShared</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.53</version>
+		</dependency>
 	</dependencies>
 
 	<properties>
+		<mainClass>oculusbot.network.server.OculusbotServerMain</mainClass>
 		<filename>OculusbotServer</filename>
 		<ip>oculusbot</ip>
 	</properties>

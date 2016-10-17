@@ -43,7 +43,7 @@ public class Controller extends StatusThread {
 		bot.start();
 		video.start();
 
-		led = new StatusLED(Pins.GPIO_05, gpio);
+		led = new StatusLED(Pins.GPIO_26, gpio);
 	}
 
 	@Override
