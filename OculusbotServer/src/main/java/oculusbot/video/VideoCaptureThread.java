@@ -22,6 +22,11 @@ public class VideoCaptureThread extends StatusThread {
 	private int count = 0;
 	private int camWidth;
 	private int camHeight;
+	private long timeStamp = 0;
+
+	public long getTimeStamp() {
+		return timeStamp;
+	}
 
 	public Mat getFrame() {
 		return frame;
@@ -30,7 +35,7 @@ public class VideoCaptureThread extends StatusThread {
 	public VideoCaptureThread(int camId) {
 		this(camId, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
-	
+
 	public VideoCaptureThread(int camId, int camWidth, int camHeight) {
 		this.camId = camId;
 		this.camWidth = camWidth;
@@ -59,10 +64,17 @@ public class VideoCaptureThread extends StatusThread {
 		cam.grab();
 		cam.retrieve(buffer);
 		frame = buffer;
+		timeStamp = System.nanoTime();
+		if(this.isInterrupted()){
+			System.out.println("EXIT");
+		}
 	}
 
 	@Override
 	protected void shutdown() {
+		System.out.println("Shutdown cam " + camId);
 		cam.release();
+		while (cam.isOpened()) {
+		}
 	}
 }

@@ -23,7 +23,12 @@ public class FrameGrabberThread extends StatusThread {
 	private boolean switchCams = false;
 	private int camWidth;
 	private int camHeight;
+	private long timeStamp;
 
+	public long getTimeStamp(){
+		return timeStamp;
+	}
+	
 	public FrameGrabberThread() {
 		this(0, 0);
 	}
@@ -81,6 +86,7 @@ public class FrameGrabberThread extends StatusThread {
 			return;
 		}
 
+		timeStamp = Math.min(leftThread.getTimeStamp(), rightThread.getTimeStamp());
 		Core.hconcat(Arrays.asList(new Mat[] { left, right }), m);
 		MatOfByte buf = new MatOfByte();
 		MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_JPEG_QUALITY, QUALITY);

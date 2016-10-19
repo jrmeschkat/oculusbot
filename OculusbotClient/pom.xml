@@ -6,7 +6,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<build>
 		<plugins>
-
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
@@ -33,7 +32,50 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<artifactItems>
+						<artifactItem>
+							<groupId>org.lwjgl</groupId>
+							<artifactId>lwjgl</artifactId>
+							<version>${lwjgl.version}</version>
+							<classifier>${lwjgl.natives}</classifier>
+							<overWrite>true</overWrite>
+							<outputDirectory>${project.build.directory}/natives</outputDirectory>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>org.lwjgl</groupId>
+							<artifactId>lwjgl-glfw</artifactId>
+							<version>${lwjgl.version}</version>
+							<classifier>${lwjgl.natives}</classifier>
+							<overWrite>true</overWrite>
+							<outputDirectory>${project.build.directory}/natives</outputDirectory>
+						</artifactItem>
+
+						<artifactItem>
+							<groupId>org.lwjgl</groupId>
+							<artifactId>lwjgl-ovr</artifactId>
+							<version>${lwjgl.version}</version>
+							<classifier>${lwjgl.natives}</classifier>
+							<overWrite>true</overWrite>
+							<outputDirectory>${project.build.directory}/natives</outputDirectory>
+						</artifactItem>
+						
+						<artifactItem>
+							<groupId>opencv</groupId>
+							<artifactId>opencv-natives</artifactId>
+							<version>3.1.0</version>
+							<overWrite>true</overWrite>
+							<outputDirectory>${project.build.directory}/natives</outputDirectory>
+							<includes>**/*.dll</includes>
+						</artifactItem>
+					</artifactItems>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -83,9 +125,8 @@
 
 	<repositories>
 		<repository>
-			<id>oss-sonatype</id>
-			<name>oss-sonatype</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<id>sonatype-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -96,29 +137,6 @@
 	</repositories>
 
 	<dependencies>
-		<!-- lwjgl natives -->
-		<dependency>
-			<groupId>org.lwjgl</groupId>
-			<artifactId>lwjgl</artifactId>
-			<version>${lwjgl.version}</version>
-			<classifier>${lwjgl.natives}</classifier>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.lwjgl</groupId>
-			<artifactId>lwjgl-glfw</artifactId>
-			<version>${lwjgl.version}</version>
-			<classifier>${lwjgl.natives}</classifier>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.lwjgl</groupId>
-			<artifactId>lwjgl-ovr</artifactId>
-			<version>${lwjgl.version}</version>
-			<classifier>${lwjgl.natives}</classifier>
-			<scope>runtime</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>oculusbot</groupId>
 			<artifactId>OculusbotShared</artifactId>

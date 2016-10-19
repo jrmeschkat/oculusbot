@@ -7,15 +7,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
@@ -41,19 +32,47 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>deploy</phase>
+						<id>default-cli</id>
+						<configuration>
+							<target>
+								<scp file="target/${filename}.jar"
+									todir="pi@oculusbot:/home/pi/${filename}/${filename}.jar"
+									password="raspberry" trust="yes" />
+
+								<scp file="server.cfg" todir="pi@oculusbot:/home/pi/${filename}/server.cfg"
+									password="raspberry" trust="yes" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+					<dependency>
+						<groupId>com.jcraft</groupId>
+						<artifactId>jsch</artifactId>
+						<version>0.1.53</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
 
+	<dependencies>
 		<dependency>
 			<groupId>oculusbot</groupId>
 			<artifactId>OculusbotShared</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.53</version>
 		</dependency>
 	</dependencies>
 
@@ -61,5 +80,7 @@
 		<mainClass>oculusbot.network.server.OculusbotServerMain</mainClass>
 		<filename>OculusbotServer</filename>
 		<ip>oculusbot</ip>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 </project>

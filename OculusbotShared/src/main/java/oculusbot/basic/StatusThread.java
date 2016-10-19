@@ -63,8 +63,8 @@ public abstract class StatusThread extends Thread {
 
 	@Override
 	public void interrupt() {
-		shutdown();
 		super.interrupt();
+		shutdown();
 	}
 	
 	protected void waitForClosingThreads(StatusThread... threads){

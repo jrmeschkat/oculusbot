@@ -27,7 +27,7 @@ public class SendVideoThread extends NetworkThread {
 	@Override
 	protected void setup() {
 		super.setup();
-		if(camHeight > 0 && camWidth > 0){
+		if (camHeight > 0 && camWidth > 0) {
 			frameGrabber = new FrameGrabberThread(camWidth, camHeight);
 		} else {
 			frameGrabber = new FrameGrabberThread();
@@ -41,13 +41,20 @@ public class SendVideoThread extends NetworkThread {
 
 	@Override
 	protected void doNetworkOperation() throws IOException {
-		if(clients.isEmpty()){
+		if (clients.isEmpty()) {
 			pause(100);
 			return;
 		}
-		byte[] data = frameGrabber.grabFrameAsByte();
-		if (data != null) {
-			for(String ip : clients){
+		byte[] frame = frameGrabber.grabFrameAsByte();
+		byte[] timeElapsed = longToByteArray(System.nanoTime() - frameGrabber.getTimeStamp());
+
+		//elapsed time for this operation negligible
+		byte[] data = new byte[frame.length + Long.BYTES];
+		System.arraycopy(timeElapsed, 0, data, 0, timeElapsed.length);
+		System.arraycopy(frame, 0, data, timeElapsed.length, frame.length);
+
+		if (frame != null) {
+			for (String ip : clients) {
 				send(data, ip, port);
 			}
 		}
@@ -60,8 +67,8 @@ public class SendVideoThread extends NetworkThread {
 	}
 
 	public void registerClient(String ip) {
-		for(String client : clients){
-			if(client.equals(ip)){
+		for (String client : clients) {
+			if (client.equals(ip)) {
 				return;
 			}
 		}
@@ -69,13 +76,21 @@ public class SendVideoThread extends NetworkThread {
 	}
 
 	public void deregisterClient(String ip) {
-		for(int i = 0; i < clients.size(); i++){
+		for (int i = 0; i < clients.size(); i++) {
 			if (clients.get(i).equals(ip)) {
 				clients.remove(i);
 				return;
 			}
 		}
 	}
-	
 
+	private byte[] longToByteArray(long l) {
+		byte[] result = new byte[Long.BYTES];
+
+		for (int i = 0; i < result.length; i++) {
+			result[i] = (byte) (l >> (i * 8));
+		}
+
+		return result;
+	}
 }

@@ -31,6 +31,7 @@ import org.lwjgl.BufferUtils;
 import oculusbot.opengl.Renderable;
 import oculusbot.opengl.ShaderUtils;
 import oculusbot.opengl.texture.MatTexture;
+import oculusbot.video.Frame;
 import oculusbot.video.ReceiveVideoThread;
 
 public class MatCanvas implements Renderable {
@@ -41,6 +42,11 @@ public class MatCanvas implements Renderable {
 	private int texture;
 	private float[] cords;
 	private MatTexture matTexture;
+	private Frame frame;
+	
+	public Frame getFrame(){
+		return frame;
+	}
 
 	public MatCanvas(ReceiveVideoThread video) {
 		matTexture = new MatTexture(video);
@@ -69,6 +75,7 @@ public class MatCanvas implements Renderable {
 
 	public void render() {
 		texture = matTexture.grabTexture();
+		frame = matTexture.getFrame();
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glUseProgram(program);

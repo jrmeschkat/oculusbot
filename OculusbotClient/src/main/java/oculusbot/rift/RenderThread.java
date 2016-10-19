@@ -67,7 +67,7 @@ public class RenderThread extends StatusThread {
 			}
 		});
 		window.init();
-		video = new ReceiveVideoThread(props.getPropertyAsInt(ClientProperties.PORT_VIDEO));
+		video = new ReceiveVideoThread(props.getPropertyAsInt(ClientProperties.PORT_VIDEO), ip);
 		video.start();
 		rift = new Rift(video);
 

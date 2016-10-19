@@ -38,6 +38,7 @@ import org.lwjgl.ovr.OVRVector3f;
 import oculusbot.opengl.FrameBufferObject;
 import oculusbot.opengl.Renderable;
 import oculusbot.opengl.renderable.MatCanvas;
+import oculusbot.video.Frame;
 import oculusbot.video.ReceiveVideoThread;
 
 import org.lwjgl.PointerBuffer;
@@ -58,6 +59,9 @@ public class Rift {
 	private int textureWidth;
 	private int textureHeight;
 	private Renderable canvas;
+	private ReceiveVideoThread video;
+	private long timeLastFrame = 0;
+	private double averageTime = 0;
 
 	public long getSession() {
 		return session;
@@ -68,6 +72,7 @@ public class Rift {
 	}
 
 	public Rift(ReceiveVideoThread video) {
+		this.video = video;
 		canvas = new MatCanvas(video);
 		//check if oculus and services is available
 		OVRDetectResult detect = OVRDetectResult.calloc();
@@ -246,9 +251,14 @@ public class Rift {
 		int result = ovr_SubmitFrame(session, 0, null, layers);
 		if (result == ovrSuccess_NotVisible) {
 			System.out.println("FRAME NOT VISIBLE");
-		}
-		if (result != ovrSuccess) {
+		} else if (result != ovrSuccess) {
 			System.err.println("FRAME SUBMIT FAILED!");
+		} else {
+			if (canvas instanceof MatCanvas) {
+				Frame frame = ((MatCanvas) canvas).getFrame();
+				double latency = frame.getLatency(System.nanoTime());
+				System.out.println("Latency (ms): " + latency);
+			}
 		}
 	}
 

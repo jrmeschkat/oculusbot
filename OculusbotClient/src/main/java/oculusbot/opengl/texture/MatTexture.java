@@ -27,6 +27,7 @@ import org.lwjgl.opengl.GL12;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 
+import oculusbot.video.Frame;
 import oculusbot.video.ReceiveVideoThread;
 
 public class MatTexture {
@@ -34,10 +35,15 @@ public class MatTexture {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
-	private Mat frame;
+	private Mat mat;
+	private Frame frame;
 	private ByteBuffer buffer;
 	private ReceiveVideoThread video;
 	private int texture;
+	
+	public Frame getFrame(){
+		return frame;
+	}
 
 	public MatTexture(ReceiveVideoThread video) {
 		this.video = video;
@@ -45,11 +51,12 @@ public class MatTexture {
 
 	public int grabTexture() {
 		frame = video.getFrame();
+		mat = frame.getMat();
 
-		int size = frame.rows() * frame.cols() * 3;
+		int size = mat.rows() * mat.cols() * 3;
 		buffer = BufferUtils.createByteBuffer(size);
 		byte[] data = new byte[size];
-		frame.get(0, 0, data);
+		mat.get(0, 0, data);
 		buffer.put(data).flip();
 
 		glDeleteTextures(texture);
@@ -57,12 +64,12 @@ public class MatTexture {
 		texture = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, (int) (frame.step1() / frame.elemSize()));
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, (int) (mat.step1() / mat.elemSize()));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.cols(), frame.rows(), 0, GL12.GL_BGR, GL_UNSIGNED_BYTE, buffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mat.cols(), mat.rows(), 0, GL12.GL_BGR, GL_UNSIGNED_BYTE, buffer);
 
 		return texture;
 	}
