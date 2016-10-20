@@ -62,6 +62,7 @@ public class Rift {
 	private ReceiveVideoThread video;
 	private long timeLastFrame = 0;
 	private double averageTime = 0;
+	private boolean showLatency = false;
 
 	public long getSession() {
 		return session;
@@ -69,6 +70,11 @@ public class Rift {
 
 	public void recenter() {
 		ovr_RecenterTrackingOrigin(session);
+	}
+	
+	public Rift(ReceiveVideoThread video, boolean showLatency){
+		this(video);
+		this.showLatency = showLatency;
 	}
 
 	public Rift(ReceiveVideoThread video) {
@@ -254,7 +260,7 @@ public class Rift {
 		} else if (result != ovrSuccess) {
 			System.err.println("FRAME SUBMIT FAILED!");
 		} else {
-			if (canvas instanceof MatCanvas) {
+			if (showLatency && canvas instanceof MatCanvas) {
 				Frame frame = ((MatCanvas) canvas).getFrame();
 				double latency = frame.getLatency(System.nanoTime());
 				System.out.println("Latency (ms): " + latency);

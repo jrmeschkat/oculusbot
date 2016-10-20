@@ -7,6 +7,13 @@ import com.pi4j.io.gpio.PinState;
 
 import oculusbot.basic.StatusThread;
 
+/**
+ * Old class used for testing basic motor functionality of the RaspberryPi. Not
+ * used in Oculusbot-project.
+ * 
+ * @author Robert Meschkat
+ *
+ */
 public class SimpleMotorThread extends StatusThread {
 	private static final long DELAY = 2;
 	private static final int STEPS = 500;

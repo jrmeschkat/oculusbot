@@ -35,7 +35,7 @@ public class RenderThread extends StatusThread {
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	public RenderThread(int width, int height, String ip) {
 		this.width = width;
 		this.height = height;
@@ -48,7 +48,7 @@ public class RenderThread extends StatusThread {
 		System.out.println(ip);
 		props = new PropertyLoader(ClientProperties.PROPERTY_FILENAME, ClientProperties.DEFAULT_PROPERTY_FILENAME);
 		com = new Communications(props.getPropertyAsInt(ClientProperties.PORT_DISCOVERY));
-		if(doDiscovery){
+		if (doDiscovery) {
 			InetAddress serverIP = com.getServerIP();
 			ip = serverIP.getHostAddress();
 		}
@@ -69,7 +69,11 @@ public class RenderThread extends StatusThread {
 		window.init();
 		video = new ReceiveVideoThread(props.getPropertyAsInt(ClientProperties.PORT_VIDEO), ip);
 		video.start();
-		rift = new Rift(video);
+		boolean showLatency = false;
+		if (props.getProperty(ClientProperties.SHOW_LATENCY).equals("true")) {
+			showLatency = true;
+		}
+		rift = new Rift(video, showLatency);
 
 		window.register(new MirrorWindow(rift.getMirrorFramebuffer(width, height), width, height));
 		rift.init();
@@ -100,7 +104,7 @@ public class RenderThread extends StatusThread {
 		window.destroy();
 		com.deregisterClient();
 	}
-	
+
 	public void sendPosition(double yaw, double pitch, double roll) {
 		com.sendPosition(yaw, pitch, roll);
 	}
