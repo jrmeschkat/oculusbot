@@ -115,7 +115,6 @@ public class SimpleMotorThread extends StatusThread {
 
 	@Override
 	protected void setup() {
-		// TODO Auto-generated method stub
 
 	}
 

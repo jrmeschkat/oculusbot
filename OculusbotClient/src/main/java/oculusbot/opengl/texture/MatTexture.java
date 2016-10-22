@@ -30,6 +30,13 @@ import org.opencv.core.Mat;
 import oculusbot.video.Frame;
 import oculusbot.video.ReceiveVideoThread;
 
+/**
+ * Uses the {@link oculusbot.video.ReceiveVideoThread ReceiveVideoThread} to
+ * get a frame and uses it to create a texture.
+ * 
+ * @author Robert Meschkat
+ *
+ */
 public class MatTexture {
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -40,27 +47,47 @@ public class MatTexture {
 	private ByteBuffer buffer;
 	private ReceiveVideoThread video;
 	private int texture;
-	
-	public Frame getFrame(){
+
+	/**
+	 * Returns the currently used frame.
+	 * 
+	 * @return
+	 */
+	public Frame getFrame() {
 		return frame;
 	}
 
+	/**
+	 * Uses the {@link oculusbot.video.ReceiveVideoThread ReceiveVideoThread} to
+	 * get a frame and uses it to create a texture.
+	 * 
+	 * @param video
+	 */
 	public MatTexture(ReceiveVideoThread video) {
 		this.video = video;
 	}
 
+	/**
+	 * Creates an OpenGL texture.
+	 * 
+	 * @return the OpenGL texture ID
+	 */
 	public int grabTexture() {
 		frame = video.getFrame();
+		//get the data
 		mat = frame.getMat();
 
+		//put data into buffer
 		int size = mat.rows() * mat.cols() * 3;
 		buffer = BufferUtils.createByteBuffer(size);
 		byte[] data = new byte[size];
 		mat.get(0, 0, data);
 		buffer.put(data).flip();
 
+		//delete the last texture to avoid memory leak
 		glDeleteTextures(texture);
-		
+
+		//create the texture
 		texture = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -73,5 +100,5 @@ public class MatTexture {
 
 		return texture;
 	}
-	
+
 }
