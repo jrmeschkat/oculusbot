@@ -53,7 +53,6 @@ public class Rift {
 	private OVRHmdDesc hmdDesc;
 	private OVRFovPort[] fovPorts = new OVRFovPort[2];
 	private OVRPosef[] eyePoses = new OVRPosef[2];
-	private OVRMatrix4f[] projections = new OVRMatrix4f[2];
 	private OVREyeRenderDesc[] eyeRenderDescs = new OVREyeRenderDesc[2];
 	private long chain;
 	private FrameBufferObject[] fbos;
@@ -155,9 +154,6 @@ public class Rift {
 			//initialize field of view (FOV) with default values 
 			fovPorts[eye] = hmdDesc.DefaultEyeFov(eye);
 
-			//FIXME can probably be deleted
-			projections[eye] = OVRMatrix4f.malloc();
-			ovrMatrix4f_Projection(fovPorts[eye], 0.5f, 500f, ovrProjection_None, projections[eye]);
 			//get render information
 			eyeRenderDescs[eye] = OVREyeRenderDesc.malloc();
 			ovr_GetRenderDesc(session, eye, fovPorts[eye], eyeRenderDescs[eye]);
@@ -173,7 +169,6 @@ public class Rift {
 
 	public void init() {
 
-		//TODO check if there should be a 8px border between video frames
 		//calculate viewport size for each eye
 		float pixelsPerDisplayPixel = 1;
 		OVRSizei leftTextureSize = OVRSizei.malloc();
@@ -325,9 +320,6 @@ public class Rift {
 	 * @throws NullPointerException
 	 */
 	public boolean destroy() throws NullPointerException {
-		for (OVRMatrix4f projection : projections) {
-			projection.free();
-		}
 
 		for (OVREyeRenderDesc eyeRenderDesc : eyeRenderDescs) {
 			eyeRenderDesc.free();

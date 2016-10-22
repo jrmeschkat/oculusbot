@@ -30,6 +30,11 @@ public class FrameGrabberThread extends StatusThread {
 	private int camWidth;
 	private int camHeight;
 	private long timeStamp;
+	/**
+	 * Border used to prevent texture filtering and chromatic aberration.
+	 * @see org.lwjgl.ovr.OVR#ovr_GetFovTextureSize(long, int, org.lwjgl.ovr.OVRFovPort, float, org.lwjgl.ovr.OVRSizei) ovr_GetFovTextureSize
+	 */
+	private Mat border = null;
 
 	/**
 	 * Returns the older time stamp of both frames.
@@ -118,12 +123,17 @@ public class FrameGrabberThread extends StatusThread {
 		if (left == null || left.empty() || right == null || right.empty()) {
 			return;
 		}
+		
+		if(border == null){
+			int rows = Math.max(left.rows(), right.rows());
+			border = new Mat(rows, 8, left.type());
+		}
 
 		//combine the time stamps 
 		timeStamp = Math.min(leftThread.getTimeStamp(), rightThread.getTimeStamp());
 
 		//concatenate both images and save the result in the buffer
-		Core.hconcat(Arrays.asList(new Mat[] { left, right }), m);
+		Core.hconcat(Arrays.asList(new Mat[] { left, border, right }), m);
 		//create a buffer and options for compression
 		MatOfByte buf = new MatOfByte();
 		MatOfInt params = new MatOfInt(Imgcodecs.CV_IMWRITE_JPEG_QUALITY, QUALITY);

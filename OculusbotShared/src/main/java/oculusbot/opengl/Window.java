@@ -241,7 +241,6 @@ public class Window {
 		}
 	}
 
-	//TODO add method to unregister objects
 	/**
 	 * <b>Must be called before start() at the moment.</b>
 	 * 
