@@ -5,11 +5,6 @@ import java.net.DatagramPacket;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.imgcodecs.Imgcodecs;
-
 import oculusbot.network.NetworkThread;
 import oculusbot.network.test.PingThread;
 /**

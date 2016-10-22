@@ -60,7 +60,6 @@
 		<opencv.dir>D:/libs/opencv</opencv.dir>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<lwjgl.jar>D:/libs/lwjgl/lwjgl.jar</lwjgl.jar>
 	</properties>
 
 	<repositories>

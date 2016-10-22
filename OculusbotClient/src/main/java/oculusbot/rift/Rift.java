@@ -23,7 +23,6 @@ import org.lwjgl.ovr.OVRInitParams;
 import org.lwjgl.ovr.OVRLayerEyeFov;
 import org.lwjgl.ovr.OVRLogCallback;
 import org.lwjgl.ovr.OVRLogCallbackI;
-import org.lwjgl.ovr.OVRMatrix4f;
 import org.lwjgl.ovr.OVRMirrorTextureDesc;
 import org.lwjgl.ovr.OVRPosef;
 import org.lwjgl.ovr.OVRRecti;

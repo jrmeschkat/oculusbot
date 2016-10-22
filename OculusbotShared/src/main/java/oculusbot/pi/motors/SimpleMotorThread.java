@@ -16,14 +16,12 @@ import oculusbot.basic.StatusThread;
  */
 public class SimpleMotorThread extends StatusThread {
 	private static final long DELAY = 2;
-	private static final int STEPS = 500;
 	private static final int TYPE = 2;
 
 	private GpioPinDigitalOutput blue;
 	private GpioPinDigitalOutput pink;
 	private GpioPinDigitalOutput yellow;
 	private GpioPinDigitalOutput orange;
-	private boolean running = true;
 	private boolean forward = true;
 	private boolean pause = false;
 
