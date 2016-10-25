@@ -17,6 +17,8 @@ public class SendVideoThread extends NetworkThread {
 	private LinkedList<String> clients;
 	private int camWidth = 0;
 	private int camHeight = 0;
+	private int camIdLeft = 0;
+	private int camIdRight = 1;
 
 	/**
 	 * Creates the send video thread.
@@ -27,12 +29,18 @@ public class SendVideoThread extends NetworkThread {
 	 *            Width for each camera
 	 * @param camHeight
 	 *            Height for each camera
+	 * @param camIdLeft
+	 *            ID that identifies the left camera
+	 * @param camIdRight
+	 *            ID that identifies the right camera
 	 */
-	public SendVideoThread(int port, int camWidth, int camHeight) {
+	public SendVideoThread(int port, int camWidth, int camHeight, int camIdLeft, int camIdRight) {
 		super(port, false);
 		clients = new LinkedList<>();
 		this.camWidth = camWidth;
 		this.camHeight = camHeight;
+		this.camIdLeft = camIdLeft;
+		this.camIdRight = camIdRight;
 	}
 
 	@Override
@@ -44,7 +52,7 @@ public class SendVideoThread extends NetworkThread {
 	protected void setup() {
 		super.setup();
 		if (camHeight > 0 && camWidth > 0) {
-			frameGrabber = new FrameGrabberThread(camWidth, camHeight);
+			frameGrabber = new FrameGrabberThread(camWidth, camHeight, camIdLeft, camIdRight);
 		} else {
 			frameGrabber = new FrameGrabberThread();
 		}
@@ -65,7 +73,7 @@ public class SendVideoThread extends NetworkThread {
 			pause(100);
 			return;
 		}
-		
+
 		//get every information for packet
 		byte[] frame = frameGrabber.grabFrameAsByte();
 		byte[] timeElapsed = longToByteArray(System.nanoTime() - frameGrabber.getTimeStamp());
@@ -92,7 +100,9 @@ public class SendVideoThread extends NetworkThread {
 
 	/**
 	 * Adds a client to the receiver list.
-	 * @param ip IP of the client.
+	 * 
+	 * @param ip
+	 *            IP of the client.
 	 */
 	public void registerClient(String ip) {
 		for (String client : clients) {
@@ -105,9 +115,11 @@ public class SendVideoThread extends NetworkThread {
 
 	/**
 	 * Removes a client from the receiver list.
-	 * @param ip IP of the client.
+	 * 
+	 * @param ip
+	 *            IP of the client.
 	 */
-	public void deregisterClient(String ip) {
+	public void unregisterClient(String ip) {
 		for (int i = 0; i < clients.size(); i++) {
 			if (clients.get(i).equals(ip)) {
 				clients.remove(i);
@@ -118,7 +130,9 @@ public class SendVideoThread extends NetworkThread {
 
 	/**
 	 * Converts a long value to a byte array for sending.
-	 * @param l Value to convert.
+	 * 
+	 * @param l
+	 *            Value to convert.
 	 * @return
 	 */
 	private byte[] longToByteArray(long l) {
@@ -130,4 +144,5 @@ public class SendVideoThread extends NetworkThread {
 
 		return result;
 	}
+	
 }

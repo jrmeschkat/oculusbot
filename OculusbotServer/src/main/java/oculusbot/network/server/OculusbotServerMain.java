@@ -3,6 +3,8 @@ package oculusbot.network.server;
 import java.io.IOException;
 import java.util.Scanner;
 
+import oculusbot.config.CameraConfig;
+
 /**
  * Main class for the server. Starts a controller and waits for a specific
  * keyboard input to close program.
@@ -13,6 +15,12 @@ import java.util.Scanner;
 public class OculusbotServerMain {
 
 	public static void main(String[] args) throws IOException {
+		//run camera configuration instead of normal program
+		if (args != null && args.length > 0 && args[0].equals("-c")) {
+			CameraConfig.lookupCameras();
+			return;
+		}
+		
 		Controller controller = new Controller();
 		controller.start();
 

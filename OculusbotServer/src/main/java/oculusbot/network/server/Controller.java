@@ -15,7 +15,8 @@ import oculusbot.pi.basics.Pins;
 import oculusbot.video.SendVideoThread;
 
 /**
- * Class that handles communication between the differnet parts of the program.
+ * Class that handles communication between the different parts of the program.
+ * 
  * @author Robert Meschkat
  *
  */
@@ -36,14 +37,16 @@ public class Controller extends StatusThread {
 		gpio = GpioFactory.getInstance();
 		//create the communications thread
 		com = new CommunicationsThread(props.getPropertyAsInt(PORT_DISCOVERY), this);
-		
+
 		//load some properties for the video thread
 		int camWidth = props.getPropertyAsInt(CAM_WIDTH);
 		int camHeight = props.getPropertyAsInt(CAM_HEIGHT);
+		int camIdLeft = props.getPropertyAsInt(CAM_ID_LEFT);
+		int camIdRight = props.getPropertyAsInt(CAM_ID_RIGHT);
 		msg("Cam resolution: " + camWidth + " x " + camHeight);
 		//start the video and bot control thread
 		bot = new BotControlThread(gpio);
-		video = new SendVideoThread(props.getPropertyAsInt(PORT_VIDEO), camWidth, camHeight);
+		video = new SendVideoThread(props.getPropertyAsInt(PORT_VIDEO), camWidth, camHeight, camIdLeft, camIdRight);
 		com.start();
 		bot.start();
 		video.start();
@@ -70,7 +73,9 @@ public class Controller extends StatusThread {
 
 	/**
 	 * Tells the video thread to add a client to the receiver list.
-	 * @param ip IP of the client
+	 * 
+	 * @param ip
+	 *            IP of the client
 	 */
 	public void registerClient(String ip) {
 		video.registerClient(ip);
@@ -78,15 +83,19 @@ public class Controller extends StatusThread {
 
 	/**
 	 * Tells the video thread to remove a client from the receiver list.
-	 * @param ip IP of the client
+	 * 
+	 * @param ip
+	 *            IP of the client
 	 */
-	public void deregisterClient(String ip) {
-		video.deregisterClient(ip);
+	public void unregisterClient(String ip) {
+		video.unregisterClient(ip);
 	}
 
 	/**
 	 * Handles the received keyboard input of the client.
-	 * @param key Key that determines the operation
+	 * 
+	 * @param key
+	 *            Key that determines the operation
 	 */
 	public void keyReleased(int key) {
 		if (key == GLFW.GLFW_KEY_S) {
@@ -96,7 +105,9 @@ public class Controller extends StatusThread {
 
 	/**
 	 * Tells the bot control thread to update the target motor position.
-	 * @param data New position data.
+	 * 
+	 * @param data
+	 *            New position data.
 	 */
 	public void setPosition(double[] data) {
 		if (data != null && data.length > 2)

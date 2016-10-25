@@ -78,7 +78,7 @@ public class Communications {
 	 */
 	public void unregisterClient() {
 		checkServerIp();
-		contactServer(OB_DEREGISTER_CLIENT, server, false);
+		contactServer(OB_UNREGISTER_CLIENT, server, false);
 	}
 
 	/**

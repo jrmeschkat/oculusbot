@@ -101,9 +101,6 @@ public class VideoCaptureThread extends StatusThread {
 		frame = buffer;
 		//take a time stamp for latency measurement
 		timeStamp = System.nanoTime();
-		if (this.isInterrupted()) {
-			System.out.println("EXIT");
-		}
 	}
 
 	@Override

@@ -22,17 +22,26 @@ public class FrameGrabberThread extends StatusThread {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
-	private static final int QUALITY = 25;
+	/**
+	 * Limit that ensures that the data still fits in an UDP-packet.
+	 */
+	private static final int MAX_DATA_SIZE = 65000;
+	private static final int QUALITY = 18;
 	private MatOfByte buffer;
 	private VideoCaptureThread leftThread;
 	private VideoCaptureThread rightThread;
 	private boolean switchCams = false;
 	private int camWidth;
 	private int camHeight;
+	private int camIdLeft;
+	private int camIdRight;
 	private long timeStamp;
 	/**
 	 * Border used to prevent texture filtering and chromatic aberration.
-	 * @see org.lwjgl.ovr.OVR#ovr_GetFovTextureSize(long, int, org.lwjgl.ovr.OVRFovPort, float, org.lwjgl.ovr.OVRSizei) ovr_GetFovTextureSize
+	 * 
+	 * @see org.lwjgl.ovr.OVR#ovr_GetFovTextureSize(long, int,
+	 *      org.lwjgl.ovr.OVRFovPort, float, org.lwjgl.ovr.OVRSizei)
+	 *      ovr_GetFovTextureSize
 	 */
 	private Mat border = null;
 
@@ -46,21 +55,29 @@ public class FrameGrabberThread extends StatusThread {
 	}
 
 	/**
-	 * Creates a frame grabber thread with default camera resolutions.
+	 * Creates a frame grabber thread with default camera resolutions and IDs.
 	 */
 	public FrameGrabberThread() {
-		this(0, 0);
+		this(0, 0, 0, 1);
 	}
 
 	/**
 	 * Creates a frame grabber thread with specific camera resolutions.
 	 * 
 	 * @param camWidth
+	 *            Width for each {@link VideoCaptureThread}
 	 * @param camHeight
+	 *            Height for each {@link VideoCaptureThread}
+	 * @param camIdLeft
+	 *            Device ID for the left camera
+	 * @param camIdRight
+	 *            Device ID for the right camera
 	 */
-	public FrameGrabberThread(int camWidth, int camHeight) {
+	public FrameGrabberThread(int camWidth, int camHeight, int camIdLeft, int camIdRight) {
 		this.camWidth = camWidth;
 		this.camHeight = camHeight;
+		this.camIdLeft = camIdLeft;
+		this.camIdRight = camIdRight;
 	}
 
 	@Override
@@ -76,17 +93,24 @@ public class FrameGrabberThread extends StatusThread {
 	}
 
 	/**
-	 * Returns the current frame as byte array.
+	 * Returns the current frame as byte array. Cuts of everything thats larger than {@value #MAX_DATA_SIZE}.
 	 * 
 	 * @return
 	 */
 	public byte[] grabFrameAsByte() {
 		try {
-			return buffer.toArray();
+			byte[] data = buffer.toArray();
+			//remove everything that is over the limit
+			if(data.length > MAX_DATA_SIZE){
+				data = new byte[MAX_DATA_SIZE];
+				System.arraycopy(buffer.toArray(), 0, data, 0, data.length);
+				msg("WARNING: Image to big. Data will be lost.");
+			}
+			
+			return data;
 		} catch (RuntimeException e) {
 			return null;
 		}
-
 	}
 
 	@Override
@@ -94,12 +118,12 @@ public class FrameGrabberThread extends StatusThread {
 		this.buffer = new MatOfByte();
 		if (camWidth > 0 && camHeight > 0) {
 			//start camera threads with specific resolution
-			leftThread = new VideoCaptureThread(0, camWidth, camHeight);
-			rightThread = new VideoCaptureThread(1, camWidth, camHeight);
+			leftThread = new VideoCaptureThread(camIdLeft, camWidth, camHeight);
+			rightThread = new VideoCaptureThread(camIdRight, camWidth, camHeight);
 		} else {
 			//start camera threads with default resolution
-			leftThread = new VideoCaptureThread(0);
-			rightThread = new VideoCaptureThread(1);
+			leftThread = new VideoCaptureThread(camIdLeft);
+			rightThread = new VideoCaptureThread(camIdRight);
 		}
 		leftThread.start();
 		rightThread.start();
@@ -123,8 +147,8 @@ public class FrameGrabberThread extends StatusThread {
 		if (left == null || left.empty() || right == null || right.empty()) {
 			return;
 		}
-		
-		if(border == null){
+
+		if (border == null) {
 			int rows = Math.max(left.rows(), right.rows());
 			border = new Mat(rows, 8, left.type());
 		}

@@ -7,8 +7,10 @@ import java.util.Arrays;
 
 import oculusbot.network.NetworkThread;
 import oculusbot.network.test.PingThread;
+
 /**
  * Receives the video data from the two cameras on the bot.
+ * 
  * @author Robert Meschkat
  *
  */
@@ -16,12 +18,14 @@ public class ReceiveVideoThread extends NetworkThread {
 	/**
 	 * The maximum packet size which can be received.
 	 */
-	private static final int PACKET_SIZE = 32000;
+	private static final int MAX_PACKET_SIZE = 65000;
+
 	private Frame frame;
 	private PingThread ping;
 
 	/**
 	 * Returns the last received frame.
+	 * 
 	 * @return
 	 */
 	public Frame getFrame() {
@@ -30,18 +34,21 @@ public class ReceiveVideoThread extends NetworkThread {
 
 	/**
 	 * Create a thread to receive video from the bot.
-	 * @param port The port to use.
-	 * @param ip IP of the server
+	 * 
+	 * @param port
+	 *            The port to use.
+	 * @param ip
+	 *            IP of the server
 	 */
 	public ReceiveVideoThread(int port, String ip) {
 		super(port);
-		ping = new PingThread(ip, PACKET_SIZE);
+		ping = new PingThread(ip, MAX_PACKET_SIZE);
 	}
 
 	@Override
 	protected void setup() {
 		super.setup();
-		setPacketSize(PACKET_SIZE);
+		setPacketSize(MAX_PACKET_SIZE);
 	}
 
 	@Override
@@ -60,12 +67,12 @@ public class ReceiveVideoThread extends NetworkThread {
 		byte[] data = packet.getData();
 		long timeElapsed = byteArrayToLong(Arrays.copyOf(data, Long.BYTES));
 		data = Arrays.copyOfRange(data, Long.BYTES, data.length);
-		
+
 		//save all information in an object
 		frame = new Frame(data, timeElapsed, timeReceived, ping.getPing());
 
 	}
-	
+
 	@Override
 	protected void shutdown() {
 		super.shutdown();
@@ -74,6 +81,7 @@ public class ReceiveVideoThread extends NetworkThread {
 
 	/**
 	 * Converts byte array to a long.
+	 * 
 	 * @param b
 	 * @return
 	 */
