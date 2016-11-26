@@ -55,7 +55,7 @@
 	</build>
 
 	<properties>
-		<lwjgl.version>3.0.1-SNAPSHOT</lwjgl.version>
+		<lwjgl.version>3.1.0</lwjgl.version>
 		<opencv.jar>opencv-310</opencv.jar>
 		<opencv.dir>D:/libs/opencv</opencv.dir>
 		<maven.compiler.source>1.8</maven.compiler.source>
