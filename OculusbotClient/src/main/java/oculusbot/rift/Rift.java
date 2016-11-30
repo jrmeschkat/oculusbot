@@ -61,6 +61,8 @@ public class Rift {
 	private int textureHeight;
 	private Renderable canvas;
 	private boolean showLatency = false;
+	private long avgLatency = 0;
+	private int framesRendered = 0;
 
 	/**
 	 * Returns the session handle that identifies the current Rift instance.
@@ -305,9 +307,17 @@ public class Rift {
 			System.err.println("FRAME SUBMIT FAILED!");
 		} else {
 			if (showLatency && canvas instanceof MatCanvas) {
-				Frame frame = ((MatCanvas) canvas).getFrame();
-				double latency = frame.getLatency(System.nanoTime());
-				System.out.println("Latency (ms): " + latency);
+				//get latency values
+				Frame f = ((MatCanvas) canvas).getFrame();
+				int server = (int)f.getLatencyServer();
+				int ping = (int)f.getPing();
+				int client = (int)f.getLatencyClient();
+				//print values to console
+				System.out.print("LatencyServer + LatencyPing + LatencyClient = Latency (ms): ");
+				System.out.println(server + "\t+ " + ping + "\t+ " + client + "\t= " + (server + ping + client));
+				//update variables for final average latency
+				avgLatency += server + ping + client;
+				framesRendered++;
 			}
 		}
 	}
@@ -319,7 +329,8 @@ public class Rift {
 	 * @throws NullPointerException
 	 */
 	public boolean destroy() throws NullPointerException {
-
+		System.out.println("Average latency: "+(avgLatency / framesRendered));
+		
 		for (OVREyeRenderDesc eyeRenderDesc : eyeRenderDescs) {
 			eyeRenderDesc.free();
 		}

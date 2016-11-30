@@ -21,7 +21,7 @@ public class SendPositionDataThread extends StatusThread {
 	 * The minimum which is used to check if the new data should be send to the
 	 * server.
 	 */
-	private static final double SEND_LIMIT = 2.5;
+	private static final double SEND_LIMIT = 1;
 	private double oldYaw = 180;
 	private double oldPitch = 180;
 	private double oldRoll = 180;

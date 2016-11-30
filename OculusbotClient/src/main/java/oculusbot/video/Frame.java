@@ -64,4 +64,28 @@ public class Frame {
 	public double getLatency(long time) {
 		return (((time - timeReceived) + timeElapsed) / 1000000d) + ping;
 	}
+	
+	/**
+	 * Returns the latency from the time the frame was received until now. Result in ms.
+	 * @return
+	 */
+	public double getLatencyClient(){
+		return (System.nanoTime() - timeReceived) / 1000000d;
+	}
+	
+	/**
+	 * Latency that was created by the server in ms.
+	 * @return
+	 */
+	public double getLatencyServer(){
+		return timeElapsed / 1000000d;
+	}
+	
+	/**
+	 * Messured ping in ms.
+	 * @return
+	 */
+	public double getPing(){
+		return ping;
+	}
 }

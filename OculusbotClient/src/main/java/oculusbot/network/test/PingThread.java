@@ -104,7 +104,8 @@ public class PingThread extends StatusThread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			System.out.println("Ping interrupted.");
+			interrupt();
 		}
 	}
 

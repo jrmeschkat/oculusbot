@@ -43,6 +43,7 @@ public class ReceiveVideoThread extends NetworkThread {
 	public ReceiveVideoThread(int port, String ip) {
 		super(port);
 		ping = new PingThread(ip, MAX_PACKET_SIZE);
+		ping.start();
 	}
 
 	@Override
