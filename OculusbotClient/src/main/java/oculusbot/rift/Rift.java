@@ -62,6 +62,8 @@ public class Rift {
 	private Renderable canvas;
 	private boolean showLatency = false;
 	private long avgLatency = 0;
+	private long avgLatencyClient = 0;
+	private long avgLatencyServer = 0;
 	private int framesRendered = 0;
 
 	/**
@@ -317,6 +319,8 @@ public class Rift {
 				System.out.println(server + "\t+ " + ping + "\t+ " + client + "\t= " + (server + ping + client));
 				//update variables for final average latency
 				avgLatency += server + ping + client;
+				avgLatencyClient += client;
+				avgLatencyServer += server;
 				framesRendered++;
 			}
 		}
@@ -329,7 +333,7 @@ public class Rift {
 	 * @throws NullPointerException
 	 */
 	public boolean destroy() throws NullPointerException {
-		System.out.println("Average latency: "+(avgLatency / framesRendered));
+		System.out.println("Average latency: "+(avgLatency / framesRendered)+"("+avgLatencyClient/framesRendered+", "+avgLatencyServer/framesRendered+")");
 		
 		for (OVREyeRenderDesc eyeRenderDesc : eyeRenderDescs) {
 			eyeRenderDesc.free();
