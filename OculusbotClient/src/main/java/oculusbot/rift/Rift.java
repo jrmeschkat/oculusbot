@@ -269,6 +269,12 @@ public class Rift {
 		OVRPosef headPose = trackingState.HeadPose().ThePose();
 		trackingState.free();
 
+		//print warning if HMD is not in range
+		int flags = trackingState.StatusFlags();
+		if ((flags & ovrStatus_PositionTracked) == 0) {
+			System.out.println("WARNING! HMD not in camera range. Position can't be tracked.");
+		}
+
 		//calculate new eye positions
 		OVRVector3f.Buffer hmdToEyeViewOffsets = OVRVector3f.calloc(2);
 		hmdToEyeViewOffsets.put(0, eyeRenderDescs[ovrEye_Left].HmdToEyeOffset());
@@ -311,9 +317,9 @@ public class Rift {
 			if (showLatency && canvas instanceof MatCanvas) {
 				//get latency values
 				Frame f = ((MatCanvas) canvas).getFrame();
-				int server = (int)f.getLatencyServer();
-				int ping = (int)f.getPing();
-				int client = (int)f.getLatencyClient();
+				int server = (int) f.getLatencyServer();
+				int ping = (int) f.getPing();
+				int client = (int) f.getLatencyClient();
 				//print values to console
 				System.out.print("LatencyServer + LatencyPing + LatencyClient = Latency (ms): ");
 				System.out.println(server + "\t+ " + ping + "\t+ " + client + "\t= " + (server + ping + client));
@@ -333,8 +339,9 @@ public class Rift {
 	 * @throws NullPointerException
 	 */
 	public boolean destroy() throws NullPointerException {
-		System.out.println("Average latency: "+(avgLatency / framesRendered)+"("+avgLatencyClient/framesRendered+", "+avgLatencyServer/framesRendered+")");
-		
+		System.out.println("Average latency: " + (avgLatency / framesRendered) + "(" + avgLatencyClient / framesRendered
+				+ ", " + avgLatencyServer / framesRendered + ")");
+
 		for (OVREyeRenderDesc eyeRenderDesc : eyeRenderDescs) {
 			eyeRenderDesc.free();
 		}
